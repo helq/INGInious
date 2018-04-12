@@ -267,7 +267,7 @@ function taskFormValid()
         }
     });
 
-    form.find('input[type="file"]').each(function()
+    form.find('input[type="file"]').not('input[id*="custominput"]').each(function()
     {
         var filename = $(this).val().split(/(\\|\/)/g).pop();
 

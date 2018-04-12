@@ -4,6 +4,19 @@ $def with (inputId, courseid, taskid)
 <br>
 <div>
     <script>
+
+
+        function displayTaskWaitingForUnsavedJob () {
+             var task_alert = $('#task_alert');
+             var content = '<i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i> <b>Evaluating...</b>';
+             var div_content = "<div class='loading-alert'>"+content+"</div>";
+             task_alert.html(getAlertCode(div_content, "info", false));
+        }
+        function displayTaskStudentErrorAlert(content) {
+            displayTaskStudentAlertWithProblems(content,
+                "<b>There are some errors in your answer. Your score is " + content["grade"] + "%</b>",
+                "danger", false);
+        }
         function displayCustomInputAlert(content) {
             displayTaskStudentAlertWithProblems(content,
                 "<b>Custom run output:</b>",
@@ -16,14 +29,13 @@ $def with (inputId, courseid, taskid)
                     if ('result' in data) {
                         if (data['result'] == "failed") {
                             displayTaskStudentErrorAlert(data);
-                            unblurTaskForm();
                         }
                         else if (data['result'] == "success") {
                             displayCustomInputAlert(data);
-                            unblurTaskForm();
                         }
                     }
                 }
+                unblurTaskForm();
             }
 
             blurTaskForm();
@@ -79,10 +91,11 @@ $def with (inputId, courseid, taskid)
         Paste your input or <a href="#" id="link-custominput-$inputId">load it from file</a>
         <textarea
           id="custominput-$inputId"
-          name="custominput-$inputId"
+          name="$inputId/input"
           rows="10"
           class="form-control noresize"
           placeholder="Your input goes here"
+          data-optional="True"
         ></textarea>
       </div>
       <div class="col-md-6 pl-1">
