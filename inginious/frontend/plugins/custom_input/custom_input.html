@@ -4,58 +4,39 @@ $def with (inputId, courseid, taskid)
 <br>
 <div>
     <script>
+    function runCustomInput(inputId) {
+        var customTestOuputArea = $$('#customoutput-'+inputId);
 
-
-        function displayTaskWaitingForUnsavedJob () {
-             var task_alert = $('#task_alert');
-             var content = '<i class="fa fa-spinner fa-pulse fa-fw" aria-hidden="true"></i> <b>Evaluating...</b>';
-             var div_content = "<div class='loading-alert'>"+content+"</div>";
-             task_alert.html(getAlertCode(div_content, "info", false));
-        }
-        function displayTaskStudentErrorAlert(content) {
-            displayTaskStudentAlertWithProblems(content,
-                "<b>There are some errors in your answer. Your score is " + content["grade"] + "%</b>",
-                "danger", false);
-        }
-        function displayCustomInputAlert(content) {
-            displayTaskStudentAlertWithProblems(content,
-                "<b>Custom run output:</b>",
-                "success", true);
-        }
-
-        function runCustomInput(inputId) {
-            var runInputCallBack = function (data) {
-                if ('status' in data && data['status'] == 'done') {
-                    if ('result' in data) {
-                        if (data['result'] == "failed") {
-                            displayTaskStudentErrorAlert(data);
-                        }
-                        else if (data['result'] == "success") {
-                            displayCustomInputAlert(data);
-                        }
-                    }
-                }
-                unblurTaskForm();
+        var runCustomInputCallBack = function (data) {
+            if ('status' in data && data['status'] === 'done'
+                  && ('result' in data) ){
+                customTestOuputArea.text(data.text);
             }
 
-            blurTaskForm();
+            unblurTaskForm();
+        };
 
-            var taskForm = new FormData($$('form#task')[0]);
-            //taskForm.set("@action", "run_custom_input");
-            taskForm.set("courseid", "$courseid");
-            taskForm.set("taskid", "$taskid");
-            $$.ajax({
-                url: '/api/custom_input/',
-                method: "POST",
-                dataType: 'json',
-                data: taskForm,
-                processData: false,
-                contentType: false,
-                success: runInputCallBack,
-                error: function (er) {
-                }
-            });
-        }
+        blurTaskForm();
+        resetAlerts();
+        customTestOuputArea.text('Running...');
+
+        var taskForm = new FormData($$('form#task')[0]);
+        //taskForm.set("@action", "run_custom_input");
+        taskForm.set("courseid", "$courseid");
+        taskForm.set("taskid", "$taskid");
+        $$.ajax({
+            url: '/api/custom_input/',
+            method: "POST",
+            dataType: 'json',
+            data: taskForm,
+            processData: false,
+            contentType: false,
+            success: runCustomInputCallBack,
+            error: function (er) {
+                unblurTaskForm();
+            }
+        });
+    }
 
         function uploadfile(inputId) {
             var inputFileId = "filelink-" + inputId;
@@ -82,6 +63,44 @@ $def with (inputId, courseid, taskid)
                 element.style.display = 'none';
             }
         }
+
+    $$( document ).ready(function() {
+        var codeUploadLink = $$('a[id^="link"]');
+        codeUploadLink.each(function() {
+            var codeUploadLinkID = $$(this).attr('id');
+            $$(this).click(function(e) {
+                var fileUploaderID = 'file' + codeUploadLinkID;
+                var fileUploaderElement = $$('#' + fileUploaderID);
+                fileUploaderElement.click();
+                e.preventDefault();
+            });
+        });
+
+        var codeUploadInput = $$('input[id^="filelink"]');
+        codeUploadInput.each(function() {
+            var codeUploadInputId = $$(this).attr('id');
+            var textareaId = codeUploadInputId.replace("filelink-", "");
+            var input = this;
+            var textarea = $$('#'+textareaId);
+            var isCodeMirrorArea = textarea.hasClass("code-editor");
+
+            $$(this).change(function(e) {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    var contents = event.target.result;
+
+                    if (isCodeMirrorArea) {
+                        var editor = getEditorForProblemId(textareaId);
+                        editor.setValue(contents, -1);
+                    } else
+                        textarea[0].value = contents;
+                };
+                reader.readAsText(input.files[0]);
+            });
+        });
+
+
+    });
     </script>
   <button type="button" class="btn btn-primary" onclick="toggleElement('tools-$inputId')">Custom Input</button>
   <div id="tools-$inputId" style="display: none;">
