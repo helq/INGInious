@@ -26,6 +26,8 @@ class BaseCustomInput(object):
         username = self.user_manager.session_username()
         try:
             userinput = web.input()
+            print(userinput)
+
             courseid = userinput["courseid"]
             taskid = userinput["taskid"]
             course = self.course_factory.get_course(courseid)
@@ -35,35 +37,35 @@ class BaseCustomInput(object):
             task = course.get_task(taskid)
             if not self.user_manager.task_is_visible_by_user(task, username):
                 return self.template_helper.get_renderer().task_unavailable()
-
+            print(task)
             self.user_manager.user_saw_task(username, courseid, taskid)
 
             # TODO: this is nearly the same as the code in the webapp.
             # We should refactor this.
 
-            if "@action" in userinput and userinput["@action"] == "run_custom_input":
-                try:
-                    temp_client = ClientSync(client)
-                    result, grade, problems, tests, custom, archive, stdout, stderr = temp_client.new_job(
-                        task, userinput)
+            try:
+                temp_client = ClientSync(client)
+                result, grade, problems, tests, custom, archive, stdout, stderr = temp_client.new_job(
+                    task, userinput)
 
-                    data = {
-                        "status": ("done" if result[0] == "success" or result[0] == "failed" else "error"),
-                        "result": result[0],
-                        "grade": grade,
-                        "text": result[1],
-                        "tests": tests,
-                        "problems": problems,
-                        "stdout": stdout,
-                        "stderr": stderr
-                    }
+                data = {
+                    "status": ("done" if result[0] == "success" or result[0] == "failed" else "error"),
+                    "result": result[0],
+                    "grade": grade,
+                    "text": result[1],
+                    "tests": tests,
+                    "problems": problems,
+                    "stdout": stdout,
+                    "stderr": stderr
+                }
 
-                    web.header('Content-Type', 'application/json')
-                    return json.dumps(data)
-                except Exception as ex:
-                    web.header('Content-Type', 'application/json')
-                    return json.dumps({"status": "error", "text": str(ex)})
-        except:
+                web.header('Content-Type', 'application/json')
+                print(data)
+                return json.dumps(data)
+            except Exception as ex:
+                web.header('Content-Type', 'application/json')
+                return json.dumps({"status": "error", "text": str(ex)})
+        except Exception as ex:
             if web.config.debug:
                 raise
             else:
