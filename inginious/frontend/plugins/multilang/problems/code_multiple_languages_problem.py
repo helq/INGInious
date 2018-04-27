@@ -49,10 +49,10 @@ class DisplayableCodeMultipleLanguagesProblem(CodeMultipleLanguagesProblem, Disp
         dropdown_id = self.get_id() + "/language"
         custom_input_id = self.get_id() + "/input"
 
-        renderer = DisplayableCodeMultipleLanguagesProblem.get_renderer(template_helper)
 
+        renderer = DisplayableCodeMultipleLanguagesProblem.get_renderer(template_helper)
         multiple_language_render = str(renderer.multilang(self.get_id(), dropdown_id, allowed_languages, self.get_id(), self.get_type()))
         standard_code_problem_render = super(DisplayableCodeMultipleLanguagesProblem, self).show_input(template_helper, language, seed)
-        tools_render = str(renderer.tools(self.get_id(), "plain", custom_input_id, self.get_type(), python_tutor_url))
+        tools_render = str(renderer.tools(self.get_id(), "plain", custom_input_id, self.get_type(), python_tutor_url, self.get_task()))
 
         return multiple_language_render + standard_code_problem_render + tools_render

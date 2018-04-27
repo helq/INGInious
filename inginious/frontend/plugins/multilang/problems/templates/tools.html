@@ -1,4 +1,4 @@
-$def with (inputId, language, customInputId, type, pythonTutorURL)
+$def with (inputId, language, customInputId, type, pythonTutorURL,task)
 
 <br>
 <br>
@@ -70,4 +70,103 @@ $def with (inputId, language, customInputId, type, pythonTutorURL)
           element.style.display = 'none';
       }
   }
+
+  function runCustomTest(inputId) {
+      var customTestOuputArea = $$('#customoutput-'+inputId);
+
+      var runCustomInputCallBack = function (data) {
+          if ('status' in data && data['status'] === 'done'
+                && ('result' in data) ){
+              customTestOuputArea.text(data.text);
+          }
+
+          unblurTaskForm();
+      };
+
+      blurTaskForm();
+      resetAlerts();
+      customTestOuputArea.text('Running...');
+
+      var taskForm = new FormData($$('form#task')[0]);
+      //taskForm.set("@action", "run_custom_input");
+      taskForm.set("@action", "customtest");
+      taskForm.set("courseid", "$task.get_course().get_id()");
+      taskForm.set("taskid", "$task.get_id()");
+      $$.ajax({
+          url: '/api/custom_input/',
+          method: "POST",
+          dataType: 'json',
+          data: taskForm,
+          processData: false,
+          contentType: false,
+          success: runCustomInputCallBack,
+          error: function (er) {
+              unblurTaskForm();
+          }
+      });
+  }
+
+  function uploadfile(inputId) {
+      var inputFileId = "filelink-" + inputId;
+      var inputFile = $$("#" + inputFileId);
+
+      var input = document.getElementById(inputFileId);
+      input.addEventListener("change", function (event) {
+          var reader = new FileReader();
+          reader.onload = function (event) {
+              var contents = event.target.result;
+              document.getElementById(inputId).value = contents;
+          };
+          reader.readAsText(input.files[0]);
+      }, false);
+
+      inputFile.click();
+  }
+
+  function toggleElement(id) {
+      var element = document.getElementById(id);
+      if (element.style.display === 'none') {
+          element.style.display = 'block';
+      } else {
+          element.style.display = 'none';
+      }
+  }
+
+  $$( document ).ready(function() {
+    var codeUploadLink = $$('a[id^="link"]');
+    codeUploadLink.each(function() {
+        var codeUploadLinkID = $$(this).attr('id');
+        $$(this).click(function(e) {
+            var fileUploaderID = 'file' + codeUploadLinkID;
+            var fileUploaderElement = $$('#' + fileUploaderID);
+            fileUploaderElement.click();
+            e.preventDefault();
+        });
+    });
+
+    var codeUploadInput = $$('input[id^="filelink"]');
+    codeUploadInput.each(function() {
+        var codeUploadInputId = $$(this).attr('id');
+        var textareaId = codeUploadInputId.replace("filelink-", "");
+        var input = this;
+        var textarea = $$('#'+textareaId);
+        var isCodeMirrorArea = textarea.hasClass("code-editor");
+
+        $$(this).change(function(e) {
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var contents = event.target.result;
+
+                if (isCodeMirrorArea) {
+                    var editor = getEditorForProblemId(textareaId);
+                    editor.setValue(contents, -1);
+                } else
+                    textarea[0].value = contents;
+            };
+            reader.readAsText(input.files[0]);
+        });
+    });
+
+});
+
 </script>

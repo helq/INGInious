@@ -46,7 +46,7 @@ class BaseCustomInput(object):
             try:
                 temp_client = ClientSync(client)
                 result, grade, problems, tests, custom, archive, stdout, stderr = temp_client.new_job(
-                    task, userinput)
+                    task, userinput, "Frontend-" + username, True)
 
                 data = {
                     "status": ("done" if result[0] == "success" or result[0] == "failed" else "error"),

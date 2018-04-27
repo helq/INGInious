@@ -321,7 +321,6 @@ $if user_manager.has_admin_rights_on_course(course):
                 </div>
             <div class="panel-body">
                 $:problem.show_input(template_helper, user_manager.session_language(), user_manager.session_username())
-                $:template_helper.call('code_tool', inputId=problem.get_id(), courseid=course.get_id(), taskid=task.get_id(), template_helper=template_helper)
             </div>
         </div>
 
