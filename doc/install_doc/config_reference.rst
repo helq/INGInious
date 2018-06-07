@@ -15,9 +15,12 @@ To get started, files named ``configuration.example.yaml`` and ``configuration.l
 
 The different entries are :
 
-``tasks_directory``
-    The path to the directory that contains all the task definitions, grouped by courses.
-    (see :ref:`task`)
+``allow_deletion``
+    ``false`` if users cannot delete their accounts (and all related data from database), ``true``otherwise.
+
+``allow_registration``
+    ``false`` if database registration should be disabled. In this mode no password can be set and accounts
+    are only created via the external authentication systems. ``true`` otherwise.
 
 ``backend``
     The link to the backend used. You can either set it to ``local`` or indicate the address of your manually-managed backend.
@@ -32,6 +35,9 @@ The different entries are :
     - ``tcp://xxx.yyy.zzz.aaa:bbbb``, ``udp://xxx.yyy.zzz.aaa:bbbb`` or ``ipc:///path/to/your/sock``, where the adresses are the ip/socket path of
       the backend you started manually. This is for advanced users only. See commands ``inginious-backend`` and ``inginious-agent`` for more
       information.
+
+``backup_directory``
+    Path to the directory where are courses backup are stored in cases of data wiping.
 
 ``local-config``
     These configuration options are available only if you set ``backend:local``.
@@ -50,6 +56,12 @@ The different entries are :
     ``tmp_dir``
         A directory whose absolute path must be available by the docker daemon and INGInious at the same time. By default, it is ``./agent_tmp``.
 
+``log_level``
+    Can be set to ``INFO``, ``WARN``, or ``DEBUG``. Specifies the logging verbosity.
+
+``maintenance``
+    Set to ``true`` if the webapp must be disabled.
+
 ``mongo_opt``
     MongoDB client configuration.
 
@@ -60,33 +72,10 @@ The different entries are :
     ``database``
         You can change the database name if you want multiple instances or in the case of conflict.
 
-``log_level``
-    Can be set to ``INFO``, ``WARN``, or ``DEBUG``. Specifies the logging verbosity.
-
-``use_minified_js``
-    Set to ``true`` to use the minified version of Javascript scripts, ``false`` otherwise.
-
-``webterm``
-    Link to the INGInious xterm app with the following syntax: ``http[s]://host:port``.
-    If set, it allows to use in-browser task debug via ssh. (See :ref:`_webterm_setup` for
-    more information)
-
 ``plugins``
     A list of plugin modules together with configuration options.
     See :ref:`plugins` for detailed information on available plugins, including their configuration.
     Please note that the usage of at least one authentication plugin is mandatory for the webapp.
-
-Webapp-specific configuration
------------------------------
-
-``superadmins``
-    A list of super-administrators who have admin access on the whole stored content.
-
-``maintenance``
-    Set to ``true`` if the webapp must be disabled.
-
-``backup_directory``
-    Path to the directory where are courses backup are stored in cases of data wiping.
 
 ``smtp``
     Mails can be sent by plugins.
@@ -109,55 +98,43 @@ Webapp-specific configuration
     ``starttls``
         Set to ``true`` if TLS is needed.
 
+``static_directory``
+    Path to the directory where YAML-defined static pages are located.
+
+`superadmins``
+    A list of super-administrators who have admin access on the whole stored content.
+
+``tasks_directory``
+    The path to the directory that contains all the task definitions, grouped by courses.
+    (see :ref:`task`)
+
+``use_minified_js``
+    Set to ``true`` to use the minified version of Javascript scripts, ``false`` otherwise.
+
+``webterm``
+    Link to the INGInious xterm app with the following syntax: ``http[s]://host:port``.
+    If set, it allows to use in-browser task debug via ssh. (See :ref:`_webterm_setup` for
+    more information)
+
 .. _configuration.example.yaml: https://github.com/UCL-INGI/INGInious/blob/master/configuration.example.yaml
 .. _docker-py API: https://github.com/docker/docker-py/blob/master/docs/api.md#client-api
-
-LTI-specific configuration
---------------------------
-The LTI interface uses most of the same configuration options as the webapp as well as the following:
-
-``lti``
-    A list of LTI consumer key and secret values.
-
-``lti_user_name``
-    The LTI field used to identify the user. By default this is `user_id`, which for many LMS system would be
-    the numeric ID of the user. It can be set to `ext_user_username` which is often a unique username.
-
-``download_directory``
-    The path to the directory where downloads are stored temporarily during the archive is being prepared.
 
 .. _plugins:
 
 Plugins
 -------
 
-Several plugins are available to complete the INGInious feature set. Some of them are only compatible with the webapp,
-while others are compatible with both webapp and LTI application.
+Several plugins are available to complete the INGInious feature set.
 
-Auth plugins (``webapp``)
-`````````````````````````
+External authentication plugins
+```````````````````````````````
 
-You need at least one auth plugin activated.
+You can allow account creation from an external authentication source. This will link the external credentials to the
+INGInious account so that the user can log in INGInious using these credentials in the future. Several authentication
+plugins are available.
 
-demo_auth
-!!!!!!!!!
-
-Provides a simple authentification method, mainly for demo purposes, with username/password pairs stored directly in the config file.
-
-To enable this plugin, add to your configuration file:
-::
-
-    plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.auth.demo_auth
-            users:
-                username1: "password1"
-                username2: "password2"
-                username3: "password3"
-
-Each key/value pair in the ``users`` field corresponds to a new username/password user.
-
-ldap_auth
-!!!!!!!!!
+LDAP
+!!!!
 
 Uses an LDAP server to authenticate users.
 
@@ -165,25 +142,24 @@ To enable this plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.auth.ldap_auth
-            host: "your.ldap.server.com"
-            encryption: "ssl" #can be tls or none
-            base_dn: "ou=People,dc=info,dc=ucl,dc=ac,dc=be"
-            request: "uid={}",
-            prefix: "",
-            name: "INGI Login",
-            require_cert: true
+        - plugin_module: inginious.frontend.plugins.auth.ldap_auth
+          id: <some_id_for_ldap>
+          host: "your.ldap.server.com"
+          encryption: "ssl" #can be tls or none
+          base_dn: "ou=People,dc=info,dc=ucl,dc=ac,dc=be"
+          request: "(uid={})",
+          name: "LDAP Login"
 
 Most of the parameters are self-explaining, but:
 
+``id``
+    is the authentication method id. It must be alphanumerical and different from other external authentication methods.
+
 ``request``
     is the request made to the LDAP server to search the user to authentify. "{}" is replaced by the username indicated by the user.
-``prefix``
-    a prefix that will be added in the internal username used in INGInious. Useful if you have multiple auth methods with usernames used in more than one method.
 
-
-saml2_auth
-!!!!!!!!!!
+SAML2/Shibboleth
+!!!!!!!!!!!!!!!!
 
 Uses a SAML2-compliant identity provider (such as Shibboleth IdP) to authenticate users.
 
@@ -191,7 +167,8 @@ To enable this plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.auth.saml2_auth
+        - plugin_module: inginious.frontend.plugins.auth.saml2_auth
+            id: <some_id_for_saml2>
             strict: true
             sp:
                 entityId: "<your_entity_id>"
@@ -213,6 +190,7 @@ To enable this plugin, add to your configuration file:
                  email: "urn:oid:1.3.6.1.4.1.5923.1.1.1.6"
                  uid: "urn:oid:0.9.2342.19200300.100.1.1"
 
+``id`` is the authentication method id. It must be alphanumerical and different from other external authentication methods.
 Your IdP is required to provide at least attributes corresponding to the username, the complete name and the email address.
 Use the ``attributes`` entry for the mapping. The ``additionalX509certs`` is a plugin-specific entry to specify several
 certificates in case your IdP is able to use more than one.
@@ -223,30 +201,59 @@ is automatically configured by the plugin.
 
 .. _python3-saml: https://github.com/onelogin/python3-saml/
 
-db_auth
-!!!!!!!
 
-Uses the MongoDB database to authenticate users. Provides a basic email-verification based registration and password
-recovery. It does not support manual user management yet. The superadmin has to register the same way other users do.
+Facebook/LinkedIn/GitHub/Google
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Uses a Facebook/LinkedIn/GitHub/Google application to allow authentication (and possibly sharing) via the network.
+You need to create an app on the appropriate developer platform in order to use this plugin.
 
 To enable this plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.auth.db_auth
-          allow_deletion: true
+        - plugin_module: inginious.frontend.plugins.auth.facebook_auth
+            id: <some_id_for_facebook>
+            debug: false
+            client_id: <your_app_id>
+            client_secret: <your_app_secret>
 
-For mails to be sent by the registration module, you need to configure the ``smtp`` parameter of your configuration
-file. `allow_deletion` parameter can be used to specify if users can delete their accounts from INGInious.
+``id`` is the authentication method id. ``client_id`` and ``client_secret`` are the OAuth identifier and secret of the
+created app. Replace ``facebook_auth`` by ``linkedin_auth``, ``github_auth`` or ``google_auth`` according to your case.
 
-Scoreboard plugin (``webapp``)
-``````````````````````````````
+Set ``debug`` to ``true`` to allow OAuth to be run in debug mode (for instance, if SSL is not yet set up).
+
+Twitter
+!!!!!!!
+
+Uses a Twitter application to allow authentication and sharing via the network.
+You need to create two apps on the appropriate developer platform in order to use this plugin. One will only have
+authentication capabilities and the other one will be able to write posts for the user in order to share results.
+
+To enable this plugin, add to your configuration file:
+::
+
+    plugins:
+        - plugin_module: inginious.frontend.plugins.auth.twitter_auth
+          id: twitter
+          debug: false
+          client_id: <app_id_auth_only>
+          client_secret: <app_secret_auth_only>
+          share_client_id: <app_id_with_share_rights>
+          share_client_secret: <app_secret_with_share_rights>
+          user: <user_who_created_the_app>
+
+``id`` is the authentication method id. ``client_id`` and ``client_secret`` are the OAuth identifier and secret of the
+created app. Set ``debug`` to ``true`` to allow OAuth to be run in debug mode (for instance, if SSL is not yet set up).
+
+Scoreboard plugin
+`````````````````
 
 This plugin allows to generate course/tasks scoreboards. To enable the plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.scoreboard
+        - plugin_module: inginious.frontend.plugins.scoreboard
 
 To define a new scoreboard, an additional field ``scoreboard`` must be defined in the ``course.yaml`` file
 associated to a course (See :ref:`course`). For instance:
@@ -269,22 +276,22 @@ both scores are added. The last one is more complex and will create a reversed s
 The score used by this plugin for each task must be generated via a key/value custom feedback
 (see :ref:`feedback-custom`) using the ``score`` key. Only the *succeeded* tasks are taken into account.
 
-Contests plugin (``webapp``)
-````````````````````````````
+Contests plugin
+```````````````
 
 This plugin allows to manage an ACM/ICPC like contest inside a course between students.
 To enable the plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.contests
+        - plugin_module: inginious.frontend.plugins.contests
 
 A new configuration page named *Contest* appears on the administration page. To enable the contest mode, check the
 *Enable contest plugin* box on the appropriate course. Please note that the plugin will override the task
 accessibility dates.
 
-Simple grader plugin (``webapp``, ``lti``)
-``````````````````````````````````````````
+Simple grader plugin
+````````````````````
 
 This simple grader allows anonymous POST requests without storing submissions in database.
 
@@ -292,7 +299,7 @@ To enable the plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.simple_grader
+        - plugin_module: inginious.frontend.plugins.simple_grader
           courseid : "external"
           page_pattern: "/external"
           return_fields: "^(result|text|problems)$"
@@ -387,8 +394,8 @@ or
 
 where ``...`` are the results of the job, as defined in the ``return_fields`` configuration value.
 
-Git Repo plugin (``webapp``, ``lti``)
-`````````````````````````````````````
+Git Repo plugin
+```````````````
 This plugin allows saving submissions history in a Git repository, according to the following path pattern :
 ``courseid/taskid/username``. The version kept in the head of branch is the latest submission made.
 
@@ -396,31 +403,19 @@ To enable this plugin, add to your configuration file:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.git_repo
+        - plugin_module: inginious.frontend.plugins.git_repo
           repo_directory: "./repo_submissions"
 
 The ``repo_directory`` parameter specify the path to the repository that must be initialized before configuration.
 
-Task file readers plugin (``webapp``, ``lti``)
-``````````````````````````````````````````````
+JSON task file readers plugin
+`````````````````````````````
 It is possible to store task files in other formats than YAML. **However, these plugins are provided for
 retro-compatibility with previous supported formats, which are deprecated. You therefore use these plugins at your own
 risks**.
-
-JSON
-!!!!
 
 To enable the JSON task file format:
 ::
 
     plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.task_file_readers.json_reader
-
-RST
-!!!
-
-To enable the reStructuredText task file format:
-::
-
-    plugins:
-        - plugin_module: inginious.frontend.webapp.plugins.task_file_readers.rst_reader
+        - plugin_module: inginious.frontend.plugins.task_file_readers.json_reader

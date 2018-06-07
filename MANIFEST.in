@@ -1,8 +1,16 @@
 include LICENSE
 include README.rst
 recursive-include inginious/common/tests/tasks *
-recursive-include inginious/frontend/*/static *
-recursive-include inginious/frontend/*/templates *
-recursive-include inginious/frontend/webapp/plugins/contests *
-recursive-include inginious/frontend/webapp/plugins/scoreboard *
-recursive-include inginious/frontend/webapp/plugins/auth/db_auth *
+recursive-include inginious/agent/mcq_agent/i18n *
+recursive-include inginious/frontend/i18n *
+recursive-include inginious/frontend/static *
+recursive-include inginious/frontend/templates *
+recursive-include inginious/frontend/plugins/contests *
+recursive-include inginious/frontend/plugins/scoreboard *
+recursive-include inginious/frontend/plugins/auth *
+recursive-include inginious/frontend/plugins/grader_generator *
+recursive-include inginious/frontend/plugins/statistics *
+recursive-include inginious/frontend/plugins/utils *
+recursive-include inginious/frontend/plugins/multilang *
+recursive-include inginious/frontend/plugins/problem_bank *
+recursive-include inginious/frontend/plugins/custom_input *

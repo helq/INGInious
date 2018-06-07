@@ -59,9 +59,12 @@ class LocalFSProvider(FileSystemProvider):
             content = content.encode("utf-8")
         open(fullpath, 'wb').write(content)
 
-    def get(self, filepath, timestamp=None):
+    def get_fd(self, filepath, timestamp=None):
         self._checkpath(filepath)
-        return open(os.path.join(self.prefix, filepath), 'rb').read()
+        return open(os.path.join(self.prefix, filepath), 'rb')
+
+    def get(self, filepath, timestamp=None):
+        return self.get_fd(filepath, timestamp).read()
 
     def list(self, folders=True, files=True, recursive=False):
         if recursive:
@@ -140,7 +143,7 @@ class LocalFSProvider(FileSystemProvider):
                 self._recursive_overwrite(os.path.join(src, f),
                                           os.path.join(dest, f))
         else:
-            shutil.copyfile(src, dest)
+            shutil.copyfile(src, dest, follow_symlinks=False)
 
     def distribute(self, filepath, allow_folders=True):
         self._checkpath(filepath)

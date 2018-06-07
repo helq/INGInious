@@ -6,12 +6,12 @@
 """ Contains the class Course and utility functions """
 
 import copy
-
+import gettext
 
 class Course(object):
     """ Represents a course """
 
-    def __init__(self, courseid, content_description, task_factory, hook_manager):
+    def __init__(self, courseid, content_description, course_fs, task_factory, hook_manager):
         """
         :param courseid: the course id
         :param content_description: a dict with all the infos of this course
@@ -19,12 +19,31 @@ class Course(object):
         """
         self._id = courseid
         self._content = content_description
+        self._fs = course_fs
         self._task_factory = task_factory
         self._hook_manager = hook_manager
+
+        self._translations = {}
+        translations_fs = self._fs.from_subfolder("$i18n")
+        if translations_fs.exists():
+            for f in translations_fs.list(folders=False, files=True, recursive=False):
+                lang = f[0:len(f) - 3]
+                if translations_fs.exists(lang + ".mo"):
+                    self._translations[lang] = gettext.GNUTranslations(translations_fs.get_fd(lang + ".mo"))
+                else:
+                    self._translations[lang] = gettext.NullTranslations()
+
+    def gettext(self, language, *args, **kwargs):
+        translation = self._translations.get(language, gettext.NullTranslations())
+        return translation.gettext(*args, **kwargs)
 
     def get_id(self):
         """ Return the _id of this course """
         return self._id
+
+    def get_fs(self):
+        """ Returns a FileSystemProvider which points to the folder of this course """
+        return self._fs
 
     def get_task(self, taskid):
         """ Returns a Task object """

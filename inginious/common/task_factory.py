@@ -17,13 +17,20 @@ from inginious.common.exceptions import InvalidNameException, TaskNotFoundExcept
 class TaskFactory(object):
     """ Load courses from disk """
 
-    def __init__(self, filesystem: FileSystemProvider, hook_manager, task_class=Task):
+    def __init__(self, filesystem: FileSystemProvider, hook_manager, task_problem_types, task_class=Task):
         self._filesystem = filesystem
         self._task_class = task_class
         self._hook_manager = hook_manager
         self._cache = {}
         self._task_file_managers = {}
+        self._task_problem_types = task_problem_types
         self.add_custom_task_file_manager(TaskYAMLFileReader())
+
+    def add_problem_type(self, problem_type):
+        """
+        :param problem_type: Problem class
+        """
+        self._task_problem_types.update({problem_type.get_type(): problem_type})
 
     def get_task(self, course, taskid):
         """
@@ -112,6 +119,8 @@ class TaskFactory(object):
         except:
             raise TaskNotFoundException()
 
+        self._hook_manager.call_hook('task_updated', courseid=courseid, taskid=taskid, new_content=content)
+
     def get_readable_tasks(self, course):
         """ Returns the list of all available tasks in a course """
         course_fs = self._filesystem.from_subfolder(course.get_id())
@@ -197,13 +206,25 @@ class TaskFactory(object):
 
         if (course.get_id(), taskid) not in self._cache:
             return True
+
         try:
-            last_update = task_fs.get_last_modification_time(self._get_task_descriptor_info(course.get_id(), taskid)[0])
+            descriptor_name = self._get_task_descriptor_info(course.get_id(), taskid)[0]
+            last_update = {descriptor_name: task_fs.get_last_modification_time(descriptor_name)}
+            translations_fs = task_fs.from_subfolder("$i18n")
+            if translations_fs.exists():
+                for f in translations_fs.list(folders=False, files=True, recursive=False):
+                    lang = f[0:len(f) - 3]
+                    if translations_fs.exists(lang + ".mo"):
+                        last_update["$i18n/" + lang + ".mo"] = translations_fs.get_last_modification_time(lang + ".mo")
         except:
             raise TaskNotFoundException()
 
-        if self._cache[(course.get_id(), taskid)][1] < last_update:
-            return True
+        last_modif = self._cache[(course.get_id(), taskid)][1]
+        for filename, mftime in last_update.items():
+            if filename not in last_modif or last_modif[filename] < mftime:
+                return True
+
+        return False
 
     def _update_cache(self, course, taskid):
         """
@@ -222,9 +243,17 @@ class TaskFactory(object):
         except Exception as e:
             raise TaskUnreadableException(str(e))
 
+        last_modif = {descriptor_name: task_fs.get_last_modification_time(descriptor_name)}
+        translations_fs = task_fs.from_subfolder("$i18n")
+        if translations_fs.exists():
+            for f in translations_fs.list(folders=False, files=True, recursive=False):
+                lang = f[0:len(f) - 3]
+                if translations_fs.exists(lang + ".mo"):
+                    last_modif["$i18n/" + lang + ".mo"] = translations_fs.get_last_modification_time(lang + ".mo")
+
         self._cache[(course.get_id(), taskid)] = (
-            self._task_class(course, taskid, task_content, task_fs, self._hook_manager),
-            task_fs.get_last_modification_time(descriptor_name)
+            self._task_class(course, taskid, task_content, task_fs, self._hook_manager, self._task_problem_types),
+            last_modif
         )
 
     def update_cache_for_course(self, courseid):
@@ -259,3 +288,11 @@ class TaskFactory(object):
         task_fs.delete()
 
         get_course_logger(courseid).info("Task %s erased from the factory.", taskid)
+
+        self._hook_manager.call_hook('task_deleted', courseid=courseid, taskid=taskid)
+
+    def get_problem_types(self):
+        """
+        Returns the supported problem types by this task factory
+        """
+        return self._task_problem_types

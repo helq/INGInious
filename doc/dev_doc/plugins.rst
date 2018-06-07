@@ -45,13 +45,13 @@ This method takes four arguments:
   ::
 
         plugins:
-            - plugin_module: inginious.frontend.webapp.plugins.demo
+            - plugin_module: inginious.frontend.plugins.demo
               param1: "value1"
 
   will generate the following ``plugin_config`` dictionary :
   ::
 
-        {"plugin_module": "inginious.frontend.webapp.plugins.demo", "param1": "value1"}
+        {"plugin_module": "inginious.frontend.plugins.demo", "param1": "value1"}
 
 
 The remaining INGInious classes can be used from your plugins using correct imports. The ``init`` method gives you access
@@ -59,7 +59,7 @@ to the different singletons used by INGInious which are instantiated at boot tim
 be used as base for a new LTI page.
 
 The ``plugin_module`` configuration parameter corresponds to the Python package in which the ``init`` method is found.
-A demonstration plugin is found in the ``inginious.frontend.webapp.plugins.demo``. You do not need to include your plugin
+A demonstration plugin is found in the ``inginious.frontend.plugins.demo``. You do not need to include your plugin
 in the INGInious sources. As long as your plugin is found in the Python path, it will remain usable by INGInious.
 
 List of hooks
@@ -74,7 +74,7 @@ would therefore need to add a hook method. This can be done using the ``add_hook
     import logging
 
     def submission_done(submission, archive, newsub):
-        logging.getLogger("inginious.frontend.webapp.plugins.demo").info("Submission " + str(submission['_id']) + " done.")
+        logging.getLogger("inginious.frontend.plugins.demo").info("Submission " + str(submission['_id']) + " done.")
 
     def init(plugin_manager, course_factory, client, plugin_config):
         """ Init the plugin """
@@ -143,7 +143,7 @@ Each hook available in INGInious is described here, starting with its name and p
     Used to add Javascript files in the footer. 
     Should return the path to a Javascript file (relative to the root of INGInious).
 ``course_accessibility`` (``course``, ``default``)
-    Returns: inginious.frontend.webapp.accessible_time.AccessibleTime
+    Returns: inginious.frontend.accessible_time.AccessibleTime
 
     ``course`` : inginious.common.courses.Course
 
@@ -151,7 +151,7 @@ Each hook available in INGInious is described here, starting with its name and p
 
     Overrides the course accessibility.
 ``task_accessibility`` (``course``, ``taskid``, ``default``)
-    Returns: inginious.frontend.webapp.accessible_time.AccessibleTime
+    Returns: inginious.frontend.accessible_time.AccessibleTime
 
     ``course`` : inginious.common.courses.Course
 
@@ -190,10 +190,10 @@ Each hook available in INGInious is described here, starting with its name and p
     ``default`` : Default value as specified in the configuration
 
     Overrides the task network-enable option
-``new_submission`` (``submissionid``, ``submission``, ``inputdata``)
+``new_submission`` (``submission``, ``inputdata``)
     ``submissionid`` : ObjectId corresponding to the submission recently saved in database.
 
-    ``submission`` : Dictionary containing the submission metadata.
+    ``submission`` : Dictionary containing the submission metadata without ``input`` field.
 
     ``inputdata`` : Dictionary containing the raw input data entered by the student. Each key corresponding to the
     problem id.
@@ -216,3 +216,84 @@ Each hook available in INGInious is described here, starting with its name and p
 
     Adds a new helper to the instance of TemplateHelper. Should return a tuple (name,func) where name is the name that will
     be indicated when calling the TemplateHelper.call method, and func is the function that will be called.
+``feedback_text`` (``task``, ``submission``, ``text``)
+    Returns : {"task": ``task``, "submission": ``submission``, "text": ``modified_text``}
+
+    Modifies the feedback to be displayed. This hook is called each time a submission is displayed. You have to return
+    the origin ``task`` and ``submission`` objects in the return value. ``text`` is in HTML format.
+``feedback_script`` (``task``, ``submission``)
+    Return : javascript as an ``str``.
+
+    Javascript returned by this hook will be executed by the distant web browser when the submission is loaded.
+    This hook is called each time a submission is displayed. Pay attention to output correct javascript, as it may
+    break the webpage.
+``task_editor_tab`` (``course``, ``taskid``, ``task_data``, ``template_helper``)
+    
+    ``course`` : inginious.frontend.courses.WebAppCourse
+
+    ``task_data`` : OrderedDict
+    
+    ``template_helper`` : inginious.frontend.template_helper.TemplateHelper
+    
+    This hook allows to add additional tabs on the task editor.
+    
+    ``course`` is the course object related to task, ``task_data`` is the task descriptor content and ``template_helper`` is an
+    object of type TemplateHelper, that can be useful to render templates such as tab content.
+``task_editor_submit`` (``course``, ``taskid``, ``task_data``, ``task_fs``)
+    
+    ``course`` : inginious.frontend.courses.WebAppCourse
+
+    ``task_data`` : OrderedDict
+    
+    ``task_fs`` : inginious.common.filesystems.local.LocalFSProvider
+    
+    This hook allows to process form data located in the added tabs.
+    
+    ``course`` is the course object related to task, ``task_data`` is the task descriptor content and ``task_fs`` is an
+    object of type LocalFSProvider.    
+
+Additional subproblems
+----------------------
+
+Additional subproblems can be defined and added via plugins. A basic example is available on GitHub repo
+`UCL-INGI/INGInious-problems-demo <https://github.com/UCL-INGI/INGInious-problems-demo>`_.
+
+Subproblems are defined at both the backend and frontend side. At the backend side, it consists of a class inheriting
+from ``inginious.common.tasks_problems.BasicProblem`` and implementing the following abstract methods:
+
+   - ``get_type(cls)`` returning an alphanumerical string representing the problem type.
+   - ``input_is_consistent(self, task_input, default_allowed_extension, default_max_size`` returning ``True`` if the
+     ``task_input`` dictionary provided by the INGInious client is consistent and correct for the agent.
+   - ``input_type(self)`` returning ``str``, ``dict`` or ``list`` according to the actual data sent to the agent.
+   - ``check_answer(self, task_input, language)`` returning a tuple whose items are:
+
+        #. either ``True``, ``False`` or ``None``, indicating respectively that the answer is valid, invalid,
+           or need to be sent to VM
+        #. the second is the error message assigned to the task, if any (unused for now)
+        #. the third is the error message assigned to this problem, if any
+        #. the fourth is the number of errors.
+
+     This method should be called via a compatible agent, as for MCQs. The Docker
+     agent will not call this method. ``task_input`` is the dictionary provided
+     by the INGInious client after its consistency was checked. ``language`` is the gettext 2-letter language code.
+   - ``get_text_fields(cls)`` returns a dictionary whose keys are the problem YAML fields that require translation and values
+     are always True.
+   - ``parse_problem(self, problem_content)`` returns the modified `problem_content`` returned by the INGInious studio.
+     For instance, strings-encoded int values can be cast to int here.
+
+At the frontend side, it consists of a class inheriting from ``inginious.frontend.tasks_problems.DisplayableBasicProblem``
+and implementing th following abstract methods:
+
+  - ``get_type_name(self, gettext)`` returning a human-readable transleted string representing the problem type. ``gettext``
+    is the frontend user-associated gettext function.
+  - ``get_renderer(cls, template_helper)`` returning the template renderer used for the subproblem. ``template_helper``
+    is the webapp ``TemplateHelper`` singleton. It can be used to specify a local template folder.
+  - ``show_input(self, template_helper, language, seed)`` returning a HTML code displayed after the subproblem context to the
+    student. ``template_helper`` is the webapp ``TemplateHelper`` singleton. `language`` is the gettext 2-letter language
+    code. ``seed`` is a seed to be used in the random number generator. For simplicity, it should be a string and the usage
+    of the username is recommended, as the seed is made to ensure that a user always see the same exercise.
+    Classes inheriting from DisplayableBasicProblem should prepend/append a salt to the seed and then create a new
+    instance of Random from it. See ``inginious.frontend.tasks_problems.DisplayableMultipleChoiceProblem``
+    for an example.
+  - ``show_editbox(cls, template_helper, key)`` returning a HTML code corresponding to the subproblem edition box.
+    ``template_helper`` is the webapp ``TemplateHelper`` singleton. ``key`` is the problem type sent by the frontend.

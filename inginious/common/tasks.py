@@ -4,14 +4,15 @@
 # more information about the licensing of this file.
 
 """ Task """
+import gettext
+
 from inginious.common.base import id_checker
-from inginious.common.tasks_problems import CodeProblem, CodeSingleLineProblem, MultipleChoiceProblem, MatchProblem, CodeFileProblem, CodeMultipleLanguagesProblem, CodeFileMultipleLanguagesProblem
 
 
 class Task(object):
     """ Contains the data for a task """
 
-    def __init__(self, course, taskid, content, task_fs, hook_manager, task_problem_types=None):
+    def __init__(self, course, taskid, content, task_fs, hook_manager, task_problem_types):
         """
             Init the task. course is a Course object, taskid the task id, and content is a dictionnary containing the data needed to initialize the Task object.
             If init_data is None, the data will be taken from the course tasks' directory.
@@ -20,17 +21,7 @@ class Task(object):
         self._taskid = taskid
         self._fs = task_fs
         self._hook_manager = hook_manager
-
-        task_problem_types = task_problem_types or {"code": CodeProblem, 
-                                                    "code-single-line": CodeSingleLineProblem,
-                                                    "code-file": CodeFileProblem,
-                                                    "multiple-choice": MultipleChoiceProblem,
-                                                    "match": MatchProblem,
-                                                    "code-multiple-languages": CodeMultipleLanguagesProblem,
-                                                    "code-file-multiple-languages": CodeFileMultipleLanguagesProblem}
-
         self._data = content
-
         self._environment = self._data.get('environment', None)
 
         # Response is HTML
@@ -56,15 +47,28 @@ class Task(object):
         # Network access in grading container?
         self._network_grading = self._data.get("network_grading", False)
 
+        # i18n
+        self._translations = {}
+        translations_fs = self._fs.from_subfolder("$i18n")
+        if translations_fs.exists():
+            for f in translations_fs.list(folders=False, files=True, recursive=False):
+                lang = f[0:len(f) - 3]
+                if translations_fs.exists(lang + ".mo"):
+                    self._translations[lang] = gettext.GNUTranslations(translations_fs.get_fd(lang + ".mo"))
+                else:
+                    self._translations[lang] = gettext.NullTranslations()
+
         # Check all problems
         self._problems = []
-
         for problemid in self._data['problems']:
             self._problems.append(self._create_task_problem(problemid, self._data['problems'][problemid], task_problem_types))
 
         # Order
         self._order = int(self._data.get('order', -1))
 
+    def gettext(self, language, *args, **kwargs):
+        translation = self._translations.get(language, gettext.NullTranslations())
+        return translation.gettext(*args, **kwargs)
 
     def input_is_consistent(self, task_input, default_allowed_extension, default_max_size):
         """ Check if an input for a task is consistent. Return true if this is case, false else """
@@ -115,7 +119,7 @@ class Task(object):
         """ Returns a FileSystemProvider which points to the folder of this task """
         return self._fs
 
-    def check_answer(self, task_input):
+    def check_answer(self, task_input, language):
         """
             Verify the answers in task_input. Returns six values
             1st: True the input is **currently** valid. (may become invalid after running the code), False else
@@ -132,7 +136,7 @@ class Task(object):
         error_count = 0
         multiple_choice_error_count = 0
         for problem in self._problems:
-            problem_is_valid, problem_main_message, problem_s_messages, problem_mc_error_count = problem.check_answer(task_input)
+            problem_is_valid, problem_main_message, problem_s_messages, problem_mc_error_count = problem.check_answer(task_input, language)
             if problem_is_valid is None:
                 need_launch = True
             elif problem_is_valid == False:
@@ -153,4 +157,4 @@ class Task(object):
         if problem_content.get('type', "") not in task_problem_types:
             raise Exception("Invalid type for problem " + problemid)
 
-        return task_problem_types.get(problem_content.get('type', ""))(self, problemid, problem_content)
+        return task_problem_types.get(problem_content.get('type', ""))(self, problemid, problem_content, self._translations)

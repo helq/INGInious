@@ -14,8 +14,8 @@ import inginious
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 install_requires = [
-    "docker-py>=1.9.0",
-    "docutils==0.13.1",
+    "docker>=2.5.0",
+    "docutils>=0.14",
     "pymongo>=3.2.2",
     "PyYAML>=3.11",
     "web.py>=0.40.dev0",
@@ -59,6 +59,7 @@ setup(
         "cgi": ["flup>=1.0.3.dev"],
         "ldap": ["ldap3"],
         "saml2": ["python3-saml"],
+        "uwsgi": ["uwsgi"],
         "test": test_requires
     },
 
@@ -68,17 +69,13 @@ setup(
         'inginious-backend',
         'inginious-webapp',
         'inginious-install',
-        'utils/check_task_description/inginious-check-task',
         'utils/sync/inginious-synchronize',
-        'utils/task_tester/inginious-test-task',
-        'utils/task_converter/inginious-old-task-converter',
-        'utils/container_update/inginious-container-update'
+        'utils/container_update/inginious-container-update',
+        'utils/database_updater/inginious-database-update'
     ],
 
     include_package_data=True,
-
     test_suite='nose.collector',
-
     author="INGInious contributors",
     author_email="inginious@info.ucl.ac.be",
     license="AGPL 3",
