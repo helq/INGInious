@@ -1,0 +1,11 @@
+.table th.table_rubric
+{
+    padding: 0;
+    border: none;
+
+    background-color: red;
+}
+
+.container-div {
+    padding-bottom: 50px;
+}
