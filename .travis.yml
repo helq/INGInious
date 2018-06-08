@@ -22,11 +22,11 @@ install:
   - sudo usermod -aG docker "$USER"
   - git clone git://github.com/cptactionhank/sekexe
   - pip install --process-dependency-links --upgrade .
-  - sudo mkdir /var/lib/docker
-  - sudo mkdir /etc/docker
+  - sudo mkdir -p -v /var/lib/docker
+  - sudo mkdir -p -v /etc/docker
   - sudo chmod -R 777 /var/lib/docker
   - sudo chmod -R 777 /etc/docker
-  - sudo mkdir /agent_volume
+  - sudo mkdir -p -v /agent_volume
 before_script:
   - "sudo HOST_IP=\"$HOST_IP\" SLIRP_PORTS=\"$SLIRP_PORTS\" sekexe/run 'mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d --log-level=error -H tcp://0.0.0.0:2375' &"
   - "while ! docker info; do echo 'retrying to connect to docker...'; sleep 1; done"
