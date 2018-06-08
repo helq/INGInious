@@ -24,3 +24,5 @@ inginious/backup
 build/lib
 build/scripts-*
 build/
+
+venv/

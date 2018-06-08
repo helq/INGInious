@@ -1,7 +1,7 @@
 # the code for this .Travis.yml has been mostly taken from https://github.com/haiwen/seafile-docker/blob/master/.travis.yml
 language: python
 python:
-  - "2.7"
+  - "3.5"
 env:
   global:
     - "HOST_IP=$(/sbin/ifconfig venet0:0 | grep 'inet addr' | awk -F: '{print $2}' | awk '{print $1}')"
@@ -9,6 +9,9 @@ env:
     - SLIRP_PORTS="2375 4445"
     - TEST_ENV=travis
 services: mongodb
+sudo: required
+addons:
+  chrome: stable
 before_install:
   - echo exit 101 | sudo tee /usr/sbin/policy-rc.d
   - sudo chmod +x /usr/sbin/policy-rc.d
