@@ -3,24 +3,24 @@ import posixpath
 import urllib
 import os
 import collections
-import inginious.frontend.webapp.pages.api._api_page as api
+import inginious.frontend.pages.api._api_page as api
 from .rubric_wdo import RubricWdo
 from bson.objectid import ObjectId
 from pymongo import MongoClient
 import gridfs
 import bson
 
-from inginious.frontend.webapp.pages.api._api_page import APIAuthenticatedPage
-from inginious.frontend.webapp.pages.utils import INGIniousAuthPage, INGIniousPage
-from inginious.frontend.webapp.pages.course_admin.utils import INGIniousAdminPage
+from inginious.frontend.pages.api._api_page import APIAuthenticatedPage
+from inginious.frontend.pages.utils import INGIniousAuthPage, INGIniousPage
+from inginious.frontend.pages.course_admin.utils import INGIniousAdminPage
 from inginious.common.filesystems.local import LocalFSProvider
 from inginious.common.course_factory import CourseNotFoundException, CourseUnreadableException, InvalidNameException
 
 from collections import OrderedDict
 
 
-_BASE_RENDERER_PATH = 'frontend/webapp/plugins/rubric_scoring'
-_BASE_RENDERER_PATH_TEMP = 'frontend/webapp/plugins/rubric_scoring_temp'
+_BASE_RENDERER_PATH = 'frontend/plugins/rubric_scoring'
+_BASE_RENDERER_PATH_TEMP = 'frontend/plugins/rubric_scoring_temp'
 
 _BASE_STATIC_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'static')
 
