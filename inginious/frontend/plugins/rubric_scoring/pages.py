@@ -15,7 +15,6 @@ from inginious.frontend.pages.utils import INGIniousAuthPage, INGIniousPage
 from inginious.frontend.pages.course_admin.utils import INGIniousAdminPage
 from inginious.common.filesystems.local import LocalFSProvider
 from inginious.common.course_factory import CourseNotFoundException, CourseUnreadableException, InvalidNameException
-
 from collections import OrderedDict
 
 
@@ -99,7 +98,7 @@ class CourseTaskListPage(INGIniousAdminPage):
         # Now load additional informations
         result = OrderedDict()
         for taskid in tasks:
-            result[taskid] = {"name": tasks[taskid].get_name(), "viewed": 0, "attempted": 0, "attempts": 0, "succeeded": 0,
+            result[taskid] = {"name": tasks[taskid].get_name(self.user_manager.session_language()), "viewed": 0, "attempted": 0, "attempts": 0, "succeeded": 0,
                               "url": self.submission_url_generator(taskid)}
 
         for entry in data:

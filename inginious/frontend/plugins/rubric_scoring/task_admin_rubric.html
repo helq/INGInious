@@ -1,10 +1,10 @@
 $def with (course, data, task, url)
 
-$var title: $:course.get_name() - Rubric Scoring
+$var title: $:course.get_name(user_manager.session_language()) - Rubric Scoring
 
 $def NavbarF():
     <ol class="nav navbar-nav nav-breadcrumb">
-      <li><a href="$get_homepath()/course/$course.get_id()">$course.get_name()</a></li>
+      <li><a href="$get_homepath()/course/$course.get_id()">$course.get_name(user_manager.session_language())</a></li>
       <li class="active"><a href="#">Rubric Scoring <span class="sr-only">(current)</span></a></li>
     </ol>
 

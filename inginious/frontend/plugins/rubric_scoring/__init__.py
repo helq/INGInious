@@ -27,8 +27,6 @@ def init(plugin_manager, _, _2, _3):
 
 
     plugin_manager.add_hook('course_admin_menu', pages.rubric_course_admin_menu_hook)
-    plugin_manager.add_hook('course_admin_menu', pages.rubric_course_admin_menu_hook_temp)
-
 
 
 
