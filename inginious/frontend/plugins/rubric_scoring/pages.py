@@ -127,7 +127,6 @@ class TaskListSubmissionPage(INGIniousAdminPage):
 
     def page(self, course, task_id, task ):
         """ Get all data and display the page """
-        #print(self.database.collection_names())
 
         url = 'rubric_scoring'
 
@@ -157,7 +156,6 @@ class TaskListSubmissionPage(INGIniousAdminPage):
 
             ]))
 
-        #print("result", result)
         data = OrderedDict()
 
         for entry in result:
@@ -171,7 +169,6 @@ class TaskListSubmissionPage(INGIniousAdminPage):
                 data[entry["_id"]]["rubric_score"] = entry["custom"]["rubric_score"]
 
 
-        #print ("data -> ",data)
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).task_admin_rubric(
                 course,data, task, url)
@@ -196,7 +193,6 @@ class SubmissionRubricPage(INGIniousAdminPage):
 
 
     def GET_AUTH(self, course_id, task_id, submission_id):
-        #print("-->", course_id, task_id, submission_id)
         course, task = self.get_course_and_check_rights(course_id, task_id)
 
         self.template_helper.add_javascript("https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js")
@@ -207,9 +203,6 @@ class SubmissionRubricPage(INGIniousAdminPage):
         return self.page(course, task, submission_id)
 
     def page(self, course, task, submission_id):
-        #print (submission_id, type(submission_id))
-        #print ("////", course)
-
 
         # TODO: verificar que exista exactamente un elemento. TOMAR MEDIDAS PREVENTIVAS EN CASO CONTRARIO
         problem_id = task.get_problems()[0].get_id()
@@ -217,10 +210,7 @@ class SubmissionRubricPage(INGIniousAdminPage):
 
 
         submission = self.submission_manager.get_submission( submission_id, user_check=False)
-        #print (submission)
         submission_input = self.submission_manager.get_input_from_submission(submission)
-        print ("submission_code", submission_input)
-        print ("------------")
 
         language =  submission_input['input'][problem_id + '/language']
         data = {
@@ -232,7 +222,7 @@ class SubmissionRubricPage(INGIniousAdminPage):
 
         }
 
-        rubric_wdo =  RubricWdo("/home/lina/Documents/Rubrica.xlsx")
+        rubric_wdo = RubricWdo('Rubrica.json')
 
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).submission_rubric(
@@ -322,7 +312,6 @@ class CourseTaskListPageTemp(INGIniousAdminPage):
         return self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).task_list(course, result, errors, url)
 
 
-#Listado de submissions
 class TaskListSubmissionPageTemp(INGIniousAdminPage):
     def GET_AUTH(self, course_id, task_id):
 
@@ -409,7 +398,6 @@ class SubmissionRubricPageTemp(INGIniousAdminPage):
         return self.page(course, task, submission_id)
 
     def GET_AUTH(self, course_id, task_id, submission_id):
-        #print("-->", course_id, task_id, submission_id)
         course, task = self.get_course_and_check_rights(course_id, task_id)
 
         self.template_helper.add_javascript("https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js")
@@ -428,20 +416,14 @@ class SubmissionRubricPageTemp(INGIniousAdminPage):
 
 
     def page(self, course, task, submission_id):
-        #print (submission_id, type(submission_id))
-        #print ("////", course)
 
 
         # TODO: verificar que exista exactamente un elemento. TOMAR MEDIDAS PREVENTIVAS EN CASO CONTRARIO
         problem_id = task.get_problems()[0].get_id()
 
 
-
         submission = self.get_submission( submission_id)
 
-        #print ("submission ->>>>", submission)
-
-        #print (submission)
         submission_input = self.submission_manager.get_input_from_submission(submission)
         print ("submission_code", submission_input)
         print ("------------")
@@ -458,10 +440,7 @@ class SubmissionRubricPageTemp(INGIniousAdminPage):
 
         }
 
-        rubric_wdo =  RubricWdo("/home/lina/Documents/Rubrica.xlsx")
-
-
-
+        rubric_wdo =  RubricWdo('Rubrica.json')
 
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).submission_rubric(

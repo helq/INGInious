@@ -164,7 +164,7 @@ $var Navbar: $:NavbarF()
                 <thead>
                 <tr>
                     <th></th>
-                    $for header in rubrica.data.columns.values:
+                    $for header in rubrica.keys():
                     <th>$header</th>
 
                 </tr>
@@ -176,8 +176,6 @@ $var Navbar: $:NavbarF()
                         $for zeld in rubrica.data.columns.values:
                             <td class="table_rubric"> $row[zeld] </td>
                     </tr>
-
-
                 </tbody>
             </table>
         </div>
