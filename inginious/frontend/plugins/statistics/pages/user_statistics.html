@@ -11,7 +11,7 @@ $var title: My Statistics
     <div id="trials-circle" class="tab-pane fade in active">
         <h3>Trials and Best Grade</h3>
         <div id="tries_per_task" class="statistics-plot"><!-- Plotly chart will be drawn inside this DIV --></div>
-        <a href='#' onclick='UserStatistics.trialsAndBestGradeStatistic.downloadCsvAsync();'>Download CSV</a>
+        <a href='#'  class="download_csv" onclick='UserStatistics.trialsAndBestGradeStatistic.downloadCsvAsync();'>Download CSV</a>
     </div>
     <div id="bar-submissions-per-tasks" class="tab-pane fade">
         <h3>Bar Submissions Per Tasks</h3>
@@ -21,12 +21,24 @@ $var title: My Statistics
                   Toggle normalize
           </button>
         </div>
-        <a href='#' onclick='UserStatistics.barSubmissionsPerTasks.downloadCsvAsync();'>Download CSV</a>
+        <a href='#' class="download_csv" onclick='UserStatistics.barSubmissionsPerTasks.downloadCsvAsync();'>Download CSV</a>
     </div>
 </div>
 
 <script>
     function getCourseId() {
        return "$:course_id";
+    }
+
+    // Checking if csv download function exist in the code
+    var download_csv_buttons = document.getElementsByClassName('download_csv');
+    for(let it = 0; it < download_csv_buttons.length; it++){
+        element = download_csv_buttons[it];
+        fun_name = element.getAttribute('onclick');
+
+        // windown['function']. To use check function from a string.
+        if( window[fun_name] !== "function" ) {
+            element.style.visibility = "hidden";
+        }
     }
 </script>
