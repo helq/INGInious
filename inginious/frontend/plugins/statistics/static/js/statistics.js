@@ -62,13 +62,10 @@ var Statistic = (function () {
     return Statistic;
 })();
 
-function createSubmissionLink(courseId, userName, taskId, submissionId) {
-    var urlTemplate = _.template("/admin/${ courseId }/student/${ userName }/${ taskId }/${ submissionId }");
+function createSubmissionLink(submissionId) {
+    var urlTemplate = _.template("/submission/${ submissionId }");
 
     return urlTemplate({
-        courseId: courseId,
-        userName: userName,
-        taskId: taskId,
         submissionId: submissionId
     });
 }
@@ -96,8 +93,7 @@ function generateVerdictSubmissionTable(tableId, submissions){
         if (entry.id) {
             var submissionLink = $("<a>", {
                 text: entry.id,
-                href: createSubmissionLink(adminStatistics.courseId, entry.username,
-                    entry.taskId, entry.id)
+                href: createSubmissionLink(entry.id)
             });
 
             submissionCell.append(submissionLink);
@@ -137,8 +133,7 @@ function generateSubmissionTable(tableId, userTasks) {
         if (submission.id) {
             var submissionLink = $("<a>", {
                 text: submission.id,
-                href: createSubmissionLink(adminStatistics.courseId, entry.username,
-                    submission.taskId, submission.id)
+                href: createSubmissionLink(submission.id)
             });
 
             submissionCell.append(submissionLink);
