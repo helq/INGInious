@@ -55,4 +55,4 @@ class DisplayableCodeMultipleLanguagesProblem(CodeMultipleLanguagesProblem, Disp
         standard_code_problem_render = super(DisplayableCodeMultipleLanguagesProblem, self).show_input(template_helper, language, seed)
         tools_render = str(renderer.tools(self.get_id(), "plain", custom_input_id, self.get_type(), get_python_tutor_url(), get_linter_url()))
 
-        return multiple_language_render + standard_code_problem_render + tools_render
+        return multiple_language_render + standard_code_problem_render# + tools_render
