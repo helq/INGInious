@@ -190,7 +190,7 @@ def get_app(config):
 
     user_manager = UserManager(appli.get_session(), database, config.get('superadmins', []))
 
-    #update_pending_jobs(database)
+    update_pending_jobs(database)
 
     client = create_arch(config, fs_provider, zmq_context)
 
