@@ -27,7 +27,8 @@ install_requires = [
     "pyzmq >= 15.3.0",
     "natsort >= 5.0.1",
     "psutil >= 4.4.2",
-    "zipstream >= 1.1.4"
+    "zipstream >= 1.1.4",
+    "WsgiDAV >= 2.2.4"
 ]
 
 test_requires = [
@@ -68,6 +69,7 @@ setup(
         'inginious-agent-mcq',
         'inginious-backend',
         'inginious-webapp',
+        'inginious-webdav',
         'inginious-install',
         'utils/sync/inginious-synchronize',
         'utils/container_update/inginious-container-update',
@@ -80,5 +82,5 @@ setup(
     author_email="inginious@info.ucl.ac.be",
     license="AGPL 3",
     url="https://github.com/UCL-INGI/INGInious",
-    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst')).read()
+    long_description=open(os.path.join(os.path.dirname(__file__), 'README.rst'), encoding='utf8').read()
 )

@@ -43,7 +43,7 @@ class WebAppSubmissionManager:
         self._logger = logging.getLogger("inginious.webapp.submissions")
         self._lti_outcome_manager = lti_outcome_manager
 
-    def _job_done_callback(self, submissionid, task, result, grade, problems, tests, custom, archive, stdout, stderr, newsub=True):
+    def _job_done_callback(self, submissionid, task, result, grade, problems, tests, custom, state, archive, stdout, stderr, newsub=True):
         """ Callback called by Client when a job is done. Updates the submission in the database with the data returned after the completion of the
         job """
         submission = self.get_submission(submissionid, False)
@@ -59,6 +59,7 @@ class WebAppSubmissionManager:
             "problems": problems,
             "archive": (self._gridfs.put(archive) if archive is not None else None),
             "custom": custom,
+            "state": state,
             "stdout": stdout,
             "stderr": stderr
         }
@@ -80,7 +81,7 @@ class WebAppSubmissionManager:
         self._hook_manager.call_hook("submission_done", submission=submission, archive=archive, newsub=newsub)
 
         for username in submission["username"]:
-            self._user_manager.update_user_stats(username, task, submission, result[0], grade, newsub)
+            self._user_manager.update_user_stats(username, task, submission, result[0], grade, state, newsub)
 
         if "outcome_service_url" in submission and "outcome_result_id" in submission and "outcome_consumer_key" in submission:
             for username in submission["username"]:
@@ -158,9 +159,7 @@ class WebAppSubmissionManager:
             raise Exception("A user must be logged in to submit an object")
 
         # Don't enable ssh debug
-        ssh_callback = lambda host, port, password: None
-        if debug == "ssh":
-            ssh_callback = lambda host, port, password: self._handle_ssh_callback(submission["_id"], host, port, password)
+        ssh_callback = lambda host, port, password: self._handle_ssh_callback(submission["_id"], host, port, password)
 
         # Load input data and add username to dict
         inputdata = bson.BSON.decode(self._gridfs.get(submission["input"]).read())
@@ -184,15 +183,15 @@ class WebAppSubmissionManager:
             submissionid = self._database.submissions.insert(submission)
 
         jobid = self._client.new_job(task, inputdata,
-                                     (lambda result, grade, problems, tests, custom, archive, stdout, stderr:
-                                      self._job_done_callback(submissionid, task, result, grade, problems, tests, custom, archive, stdout, stderr, copy)),
+                                     (lambda result, grade, problems, tests, custom, state, archive, stdout, stderr:
+                                      self._job_done_callback(submissionid, task, result, grade, problems, tests, custom, state, archive, stdout, stderr, copy)),
                                      "Frontend - {}".format(submission["username"]), debug, ssh_callback)
 
         # Clean the submission document in db
         self._database.submissions.update(
             {"_id": submission["_id"]},
             {"$set": {"jobid": jobid, "status": "waiting", "response_type": task.get_response_type()},
-             "$unset": {"result": "", "grade": "", "text": "", "tests": "", "problems": "", "archive": "", "custom": ""}
+             "$unset": {"result": "", "grade": "", "text": "", "tests": "", "problems": "", "archive": "", "state": "", "custom": ""}
              })
 
         if not copy:
@@ -221,7 +220,7 @@ class WebAppSubmissionManager:
         :param inputdata: the input as a dictionary
         :type inputdata: dict
         :param debug: If debug is true, more debug data will be saved
-        :type debug: bool
+        :type debug: bool or string
         :returns: the new submission id and the removed submission id
         """
         if not self._user_manager.session_logged_in():
@@ -253,8 +252,9 @@ class WebAppSubmissionManager:
         inputdata["@username"] = username
         inputdata["@lang"] = self._user_manager.session_language()
         # Retrieve input random
-        random_input = self._database.user_tasks.find_one({"courseid": task.get_course_id(), "taskid": task.get_id(), "username": username}, { "random": 1 })
-        inputdata["@random"] = random_input["random"] if "random" in random_input else []
+        states = self._database.user_tasks.find_one({"courseid": task.get_course_id(), "taskid": task.get_id(), "username": username}, {"random": 1, "state": 1})
+        inputdata["@random"] = states["random"] if "random" in states else []
+        inputdata["@state"] = states["state"] if "state" in states else ""
 
         self._hook_manager.call_hook("new_submission", submission=obj, inputdata=inputdata)
         obj["input"] = self._gridfs.put(bson.BSON.encode(inputdata))
@@ -263,13 +263,11 @@ class WebAppSubmissionManager:
         submissionid = self._database.submissions.insert(obj)
         to_remove = self._after_submission_insertion(task, inputdata, debug, obj, submissionid)
 
-        ssh_callback = lambda host, port, password: None
-        if debug == "ssh":
-            ssh_callback = lambda host, port, password: self._handle_ssh_callback(submissionid, host, port, password)
+        ssh_callback = lambda host, port, password: self._handle_ssh_callback(submissionid, host, port, password)
 
         jobid = self._client.new_job(task, inputdata,
-                                     (lambda result, grade, problems, tests, custom, archive, stdout, stderr:
-                                      self._job_done_callback(submissionid, task, result, grade, problems, tests, custom, archive, stdout, stderr, True)),
+                                     (lambda result, grade, problems, tests, custom, state, archive, stdout, stderr:
+                                      self._job_done_callback(submissionid, task, result, grade, problems, tests, custom, state, archive, stdout, stderr, True)),
                                      "Frontend - {}".format(username), debug, ssh_callback)
 
         self._database.submissions.update(

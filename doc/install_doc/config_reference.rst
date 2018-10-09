@@ -4,7 +4,7 @@ Configuration reference
 =======================
 
 .. HINT::
-    The best way to configure INGInious is to use ``inginious-install``. See :ref:`config`.
+    The best way to configure INGInious is to use :ref:`inginious-install`. See :ref:`config`.
 
 Configuring INGInious is done via a file named ``configuration.yaml`` or ``configuration.lti.yaml``.
 To get started, files named ``configuration.example.yaml`` and ``configuration.lti.example.yaml`` are provided.
@@ -115,6 +115,11 @@ The different entries are :
     Link to the INGInious xterm app with the following syntax: ``http[s]://host:port``.
     If set, it allows to use in-browser task debug via ssh. (See :ref:`_webterm_setup` for
     more information)
+
+``webdav_host``
+   Link to the INGInious webdav app with the following syntax: ``http[s]://host:port``.
+   If set, a new page displays a WebDAV URL and login/password for administrators to access
+   the course filesystem.
 
 .. _configuration.example.yaml: https://github.com/UCL-INGI/INGInious/blob/master/configuration.example.yaml
 .. _docker-py API: https://github.com/docker/docker-py/blob/master/docs/api.md#client-api

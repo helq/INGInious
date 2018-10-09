@@ -123,7 +123,7 @@ class Backend(object):
             del self._waiting_jobs[(client_addr, message.job_id)]
             # Do not forget to send a JobDone
             await ZMQUtils.send_with_addr(self._client_socket, client_addr, BackendJobDone(message.job_id, ("killed", "You killed the job"),
-                                                                                           0.0, {}, {}, {}, None, "", ""))
+                                                                                           0.0, {}, {}, {}, "", None, "", ""))
         # If the job is running, transmit the info to the agent
         elif (client_addr, message.job_id) in self._job_running:
             agent_addr = self._job_running[(client_addr, message.job_id)][0]
@@ -198,9 +198,14 @@ class Backend(object):
         """
         self._logger.info("Agent %s (%s) said hello", agent_addr, message.friendly_name)
 
+        if agent_addr in self._registered_agents:
+            # Delete previous instance of this agent, if any
+            await self._delete_agent(agent_addr)
+
         self._registered_agents[agent_addr] = message.friendly_name
         self._available_agents.extend([agent_addr for _ in range(0, message.available_job_slots)])
         self._containers_on_agent[agent_addr] = message.available_containers.keys()
+        self._ping_count[agent_addr] = 0
 
         # update information about available containers
         for container_name, container_info in message.available_containers.items():
@@ -259,7 +264,8 @@ class Backend(object):
             # Sent the data back to the client
             await ZMQUtils.send_with_addr(self._client_socket, message.job_id[0], BackendJobDone(message.job_id[1], message.result,
                                                                                                  message.grade, message.problems,
-                                                                                                 message.tests, message.custom, message.archive,
+                                                                                                 message.tests, message.custom,
+                                                                                                 message.state, message.archive,
                                                                                                  message.stdout, message.stderr))
 
             # The agent is available now
@@ -326,30 +332,36 @@ class Backend(object):
 
             if delete_agent:
                 try:
-                    self._available_agents = [agent for agent in self._available_agents if agent != agent_addr]
-                    del self._registered_agents[agent_addr]
-                    await self._recover_jobs(agent_addr)
+                    await self._delete_agent(agent_addr)
                 except:
                     self._logger.exception("Failed to delete agent %s (%s)!", agent_addr, friendly_name)
 
         self._loop.call_later(1, self._create_safe_task, self._do_ping())
 
+    async def _delete_agent(self, agent_addr):
+        """ Deletes an agent """
+        self._available_agents = [agent for agent in self._available_agents if agent != agent_addr]
+        del self._registered_agents[agent_addr]
+        await self._recover_jobs(agent_addr)
+
     async def _recover_jobs(self, agent_addr):
         """ Recover the jobs sent to a crashed agent """
         for (client_addr, job_id), (agent, job_msg, _) in reversed(list(self._job_running.items())):
             if agent == agent_addr:
-                self._waiting_jobs[(client_addr, job_id)] = job_msg
+                await ZMQUtils.send_with_addr(self._client_socket, client_addr,
+                                              BackendJobDone(job_id, ("crash", "Agent restarted"),
+                                                             0.0, {}, {}, {}, "", None, None, None))
                 del self._job_running[(client_addr, job_id)]
 
         await self.update_queue()
 
     def _create_safe_task(self, coroutine):
         """ Calls self._loop.create_task with a safe (== with logged exception) coroutine """
-        return self._loop.create_task(self._create_safe_task_coro(coroutine))
+        task = self._loop.create_task(coroutine)
+        task.add_done_callback(self.__log_safe_task)
+        return task
 
-    async def _create_safe_task_coro(self, coroutine):
-        """ Helper for _create_safe_task """
-        try:
-            await coroutine
-        except:
-            self._logger.exception("An exception occurred while running a Task.")
+    def __log_safe_task(self, task):
+        exception = task.exception()
+        if exception is not None:
+            self._logger.exception("An exception occurred while running a Task", exc_info=exception)
