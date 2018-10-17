@@ -620,19 +620,19 @@ def update_pending_jobs(database):
     # Updates the submissions that are waiting with the status error, as the server restarted
     three_minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=3)
 
-    database.submissions
-        .update(
-            {
-                "$and": [
-                    {'status': 'waiting'},
-                    {"date": {"$lt": three_minutes_ago}}
-                ]
-            },
-            {
-                "$unset": {'jobid': ""},
-                "$set": {
-                    'status': 'error',
-                    'grade': 0.0,
-                    'text': 'Internal error. Server restarted'
-                }
-            }, multi=True)
+    database.submissions.update(
+        {
+            "$and": [
+                {'status': 'waiting'},
+                {"date": {"$lt": three_minutes_ago}}
+            ]
+        },
+        {
+            "$unset": {'jobid': ""},
+            "$set": {
+                'status': 'error',
+                'grade': 0.0,
+                'text': 'Internal error. Server restarted'
+            }
+        }, multi=True
+    )
