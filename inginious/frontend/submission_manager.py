@@ -618,7 +618,8 @@ def update_pending_jobs(database):
     """ Updates pending jobs status in the database """
 
     # Updates the submissions that are waiting with the status error, as the server restarted
-    three_minutes_ago = datetime.datetime.now() - datetime.timedelta(minutes=3)
+    from datetime import timedelta
+    three_minutes_ago = datetime.now() - timedelta(minutes=3)
 
     database.submissions.update(
         {
