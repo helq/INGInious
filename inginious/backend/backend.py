@@ -28,6 +28,9 @@ class Backend(object):
         self._agent_addr = agent_addr
         self._client_addr = client_addr
 
+        self._first_seen_client_identifier = None
+        self._last_seen_client_identifier = None
+
         self._agent_socket = context.socket(zmq.ROUTER)
         self._client_socket = context.socket(zmq.ROUTER)
         self._logger = logging.getLogger("inginious.backend")
@@ -108,7 +111,14 @@ class Backend(object):
 
     async def handle_client_ping(self, client_addr, _: Ping):
         """ Handle an Ping message. Pong the client """
+
+        if self._first_seen_client_identifier is None:
+            self._first_seen_client_identifier = client_addr
+
+        self._last_seen_client_identifier = client_addr
+
         await ZMQUtils.send_with_addr(self._client_socket, client_addr, Pong())
+
 
     async def handle_client_new_job(self, client_addr, message: ClientNewJob):
         """ Handle an ClientNewJob message. Add a job to the queue and triggers an update """
@@ -258,6 +268,16 @@ class Backend(object):
 
             # Sent the data back to the client
             await ZMQUtils.send_with_addr(self._client_socket, message.job_id[0], BackendJobDone(message.job_id[1], message.result,
+                                                                                                 message.grade, message.problems,
+                                                                                                 message.tests, message.custom, message.archive,
+                                                                                                 message.stdout, message.stderr))
+
+            await ZMQUtils.send_with_addr(self._client_socket, self._first_seen_client_identifier, BackendJobDone(message.job_id[1], message.result,
+                                                                                                 message.grade, message.problems,
+                                                                                                 message.tests, message.custom, message.archive,
+                                                                                                 message.stdout, message.stderr))
+
+            await ZMQUtils.send_with_addr(self._client_socket, self._last_seen_client_identifier, BackendJobDone(message.job_id[1], message.result,
                                                                                                  message.grade, message.problems,
                                                                                                  message.tests, message.custom, message.archive,
                                                                                                  message.stdout, message.stderr))
