@@ -49,6 +49,7 @@ class Backend(object):
         # Containers available per agent {"agent_addr": ["container_id_1", ...]}
         self._containers_on_agent = {}
 
+        self._first_client = None
         self._registered_clients = set()  # addr of registered clients
         self._registered_agents = {}  # addr of registered agents
         self._available_agents = []  # addr of available agents
@@ -104,6 +105,10 @@ class Backend(object):
         """ Handle an ClientHello message. Send available containers to the client """
         self._logger.info("New client connected %s", client_addr)
         self._registered_clients.add(client_addr)
+        
+        if self._first_client is None:
+            self._first_client = client_addr
+        
         await self.send_container_update_to_client([client_addr])
 
     async def handle_client_ping(self, client_addr, _: Ping):
@@ -257,7 +262,7 @@ class Backend(object):
             del self._job_running[message.job_id]
 
             # Sent the data back to the client
-            await ZMQUtils.send_with_addr(self._client_socket, message.job_id[0], BackendJobDone(message.job_id[1], message.result,
+            await ZMQUtils.send_with_addr(self._client_socket, self._first_client, BackendJobDone(message.job_id[1], message.result,
                                                                                                  message.grade, message.problems,
                                                                                                  message.tests, message.custom, message.archive,
                                                                                                  message.stdout, message.stderr))
