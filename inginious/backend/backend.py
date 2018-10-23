@@ -257,7 +257,7 @@ class Backend(object):
             del self._job_running[message.job_id]
 
             # Sent the data back to the client
-            await ZMQUtils.send_with_addr(self._client_socket, message.job_id[0], BackendJobDone(message.job_id[1], message.result,
+            await ZMQUtils.send_with_addr(self._client_socket, b"FIXED_CLIENT", BackendJobDone(message.job_id[1], message.result,
                                                                                                  message.grade, message.problems,
                                                                                                  message.tests, message.custom, message.archive,
                                                                                                  message.stdout, message.stderr))
