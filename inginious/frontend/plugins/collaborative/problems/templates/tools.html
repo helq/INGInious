@@ -1,0 +1,174 @@
+$def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
+
+<style>
+body {font-family: Arial, Helvetica, sans-serif;}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+</style>
+<br>
+<br>
+<div>
+<!-- Trigger/Open The Modal -->
+<button type="button" id="myBtn" class="btn btn-primary">I need help</button>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    
+       <div>
+  <button type="button" class="btn btn-primary" onclick="toggleElement('tools-$inputId')">Search programmer</button>
+  <div id="tools-$inputId" style="display: none">
+    <div class="row panel-body">
+      <div class="col-md-6 pr-1">
+        <textarea
+          id="custominput-$inputId"
+          name="$customInputId"
+          class="form-control noresize in-out-area"
+          placeholder="este es el codigo que enviara a un programador"
+          data-optional="True"
+        ></textarea>
+      </div>
+      <div class="col-md-6 pl-1">
+        <br>
+        <pre
+            id="customoutput-$inputId"
+            class="form-control noresize in-out-area"><span class="placeholder-text"></span>
+        </pre>
+        <br>
+      </div>
+
+      $if type == "code_multiple_languages":
+          <div class="col-md-6">
+            <button type="button" class="btn btn-default btn-md btn-block" onclick="runCustomTest('$inputId')">Send your code</button>
+          </div>
+          
+
+          <div id="modal-$inputId" class="modal modal-wide fade">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                          <h4 class="modal-title">Visualize your code!</h4>
+                      </div>
+                      <div class="modal-body"></div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                      </div>
+                  </div><!-- /.modal-content -->
+              </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+      $elif type == 'code_file_multiple_languages':
+          <div class="col-md-12">
+            <button type="button" class="btn btn-default btn-md btn-block" onclick="runCustomTest('$inputId')">Test</button>
+          </div>
+    </div>
+  </div>
+</div>
+<script>
+  function getDefaultVisualServerURL(){
+      return "$pythonTutorURL";
+  }
+
+  function getLinterServerURL(){
+      return "$linterURL";
+  }
+
+  function toggleElement (id) {
+      var element = document.getElementById(id);
+      if (element.style.display === 'none') {
+          element.style.display = 'block';
+      } else {
+          element.style.display = 'none';
+      }
+  }
+</script>
+       
+
+  </div>
+</div>
+
+</div>
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+
+  function getDefaultVisualServerURL(){
+      return "$pythonTutorURL";
+  }
+
+  function getLinterServerURL(){
+      return "$linterURL";
+  }
+
+  function toggleElement (id) {
+      var element = document.getElementById(id);
+      if (element.style.display === 'none') {
+          element.style.display = 'block';
+      } else {
+          element.style.display = 'none';
+      }
+  }
+  </script>
