@@ -5,16 +5,18 @@ var CsvConverter = (function () {
 
     CsvConverter.prototype.downloadCsv = function () {
         var filename = 'export.csv';
-
-        var csv = Papa.unparse(this.data);
-        csv = 'data:text/csv;charset=utf-8,' + csv;
-
+        var csv = 'data:text/csv;charset=utf-8,' + Papa.unparse(this.data);
         var data = encodeURI(csv);
-
         var link = document.createElement('a');
+
         link.setAttribute('href', data);
         link.setAttribute('download', filename);
+
+        // Append link to the body in order to make it work on Firefox.
+        document.body.appendChild(link);
+
         link.click();
+        link.remove();
     };
 
     return CsvConverter;
