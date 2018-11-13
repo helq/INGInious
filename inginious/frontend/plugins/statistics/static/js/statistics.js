@@ -5,16 +5,18 @@ var CsvConverter = (function () {
 
     CsvConverter.prototype.downloadCsv = function () {
         var filename = 'export.csv';
-
-        var csv = Papa.unparse(this.data);
-        csv = 'data:text/csv;charset=utf-8,' + csv;
-
+        var csv = 'data:text/csv;charset=utf-8,' + Papa.unparse(this.data);
         var data = encodeURI(csv);
-
         var link = document.createElement('a');
+
         link.setAttribute('href', data);
         link.setAttribute('download', filename);
+
+        // Append link to the body in order to make it work on Firefox.
+        document.body.appendChild(link);
+
         link.click();
+        link.remove();
     };
 
     return CsvConverter;
@@ -62,13 +64,10 @@ var Statistic = (function () {
     return Statistic;
 })();
 
-function createSubmissionLink(courseId, userName, taskId, submissionId) {
-    var urlTemplate = _.template("/admin/${ courseId }/student/${ userName }/${ taskId }/${ submissionId }");
+function createSubmissionLink(submissionId) {
+    var urlTemplate = _.template("/submission/${ submissionId }");
 
     return urlTemplate({
-        courseId: courseId,
-        userName: userName,
-        taskId: taskId,
         submissionId: submissionId
     });
 }
@@ -96,8 +95,7 @@ function generateVerdictSubmissionTable(tableId, submissions){
         if (entry.id) {
             var submissionLink = $("<a>", {
                 text: entry.id,
-                href: createSubmissionLink(adminStatistics.courseId, entry.username,
-                    entry.taskId, entry.id)
+                href: createSubmissionLink(entry.id)
             });
 
             submissionCell.append(submissionLink);
@@ -137,8 +135,7 @@ function generateSubmissionTable(tableId, userTasks) {
         if (submission.id) {
             var submissionLink = $("<a>", {
                 text: submission.id,
-                href: createSubmissionLink(adminStatistics.courseId, entry.username,
-                    submission.taskId, submission.id)
+                href: createSubmissionLink(submission.id)
             });
 
             submissionCell.append(submissionLink);
