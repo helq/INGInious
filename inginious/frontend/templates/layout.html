@@ -80,9 +80,9 @@ $:template_helper.call('header_hook')
 </head>
 
 <body role="document">
-    $:template_helper.call('UN_header')
+    $:template_helper.call('body_header', template_helper=template_helper)
     <div id="wrapper">
-        <div class="navbar navbar-default navbar-static-top" role="navigation" style="z-index: auto;">
+        <div class="navbar navbar-default navbar-static-top" role="navigation">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -91,7 +91,7 @@ $:template_helper.call('header_hook')
                             class="icon-bar"></span> <span class="icon-bar"></span> <span
                             class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="$get_homepath()/index"><img src="$get_homepath(True)/static/images/header.png" alt="logo"/> Code</a>
+                    <a class="navbar-brand" href="$get_homepath()/index"><img src="$get_homepath(True)/static/images/header.png" alt="logo"/> INGInious</a>
                 </div>
                 <div class="collapse navbar-collapse">
                     $if "Navbar" in content:
@@ -175,7 +175,7 @@ $:template_helper.call('header_hook')
         </div>
 
     </div>
-    $:template_helper.call('UN_footer')
+    $:template_helper.call('body_footer', template_helper=template_helper)
     <!-- Placed at the end of the document so the pages load faster -->
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     $:template_helper.call('javascript_footer')
