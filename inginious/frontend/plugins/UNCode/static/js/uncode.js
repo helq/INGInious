@@ -38,5 +38,18 @@ jQuery(document).ready(function() {
         updateTitle();
     }
 
+    function addTaskContextTemplate() {
+        let codeMirror = $('.CodeMirror');
+        const defaultTaskContext = $("#default_task_context").text();
+
+        if ($("#context").length !== 0 && codeMirror.length !== 0) {
+            let editor = codeMirror[0].CodeMirror;
+            if (editor.getDoc().getValue() === "") {
+                editor.getDoc().setValue(defaultTaskContext);
+            }
+        }
+    }
+
     updateTemplate();
+    addTaskContextTemplate();
 });
