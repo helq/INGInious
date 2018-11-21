@@ -3,9 +3,12 @@ from inginious.frontend.plugins.utils import create_static_resource_page
 
 _static_folder_path = os.path.join(os.path.dirname(__file__), "static")
 
+_CONTEXT_TASK_TEMPLATE_FILE = "context_task_template.rst"
+_TASK_CONTEXT_HELP_MODAL_HTML_FILE = "task_context_help_modal.html"
 
-def get_task_context_template():
-    file = open(_static_folder_path + "/context_task_template.rst", "r")
+
+def read_file(file_name):
+    file = open(_static_folder_path + "/" + file_name, "r")
     return file.read()
 
 
@@ -15,4 +18,5 @@ def init(plugin_manager, course_factory, client, config):
     plugin_manager.add_hook("javascript_header", lambda: "/UNCode/static/js/uncode.js")
     plugin_manager.add_hook("css", lambda: "/UNCode/static/css/uncode.css")
     plugin_manager.add_hook("additional_body_html", lambda: "<p class='hidden' id='default_task_context'>" +
-                                                            get_task_context_template() + "</p>")
+                                                            read_file(_CONTEXT_TASK_TEMPLATE_FILE) + "</p>")
+    plugin_manager.add_hook("additional_body_html", lambda: read_file(_TASK_CONTEXT_HELP_MODAL_HTML_FILE))

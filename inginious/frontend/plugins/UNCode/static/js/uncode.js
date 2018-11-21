@@ -50,6 +50,17 @@ jQuery(document).ready(function() {
         }
     }
 
+    function addTaskContextTips(){
+        let taskContext = $("#context");
+        const tipsButton = "<a href='#' type='button' data-toggle='modal' data-target='#task_context_help_modal'>" +
+            "<i class='fa fa-question-circle'>  Help.</a>";
+
+        if(taskContext.length !== 0){
+            taskContext.before(tipsButton);
+        }
+    }
+
     updateTemplate();
     addTaskContextTemplate();
+    addTaskContextTips();
 });
