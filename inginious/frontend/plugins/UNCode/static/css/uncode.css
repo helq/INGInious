@@ -1,12 +1,12 @@
-.navbar-static-top{
+.navbar-static-top {
     z-index: auto;
 }
 
-.bullet-list-disc{
-    list-style-type:disc;
+.bullet-list-disc {
+    list-style-type: disc;
 }
 
-.list-group-item-text{
+.list-group-item-text {
     font-size: 15px;
 }
 

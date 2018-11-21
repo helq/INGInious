@@ -1,6 +1,6 @@
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 
-    function updateNavbarLogo(imagePath){
+    function updateNavbarLogo(imagePath) {
         let logoElement = $('#wrapper')
             .find('> div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a');
         const image = logoElement.find("> img").attr("src", imagePath);
@@ -8,7 +8,7 @@ jQuery(document).ready(function() {
         logoElement.html(image).append(" Code");
     }
 
-    function updateFooter(){
+    function updateFooter() {
         // Update footer with new information.
         let footer = $('#footer');
         footer.find('> div > div > div > p')
@@ -20,16 +20,16 @@ jQuery(document).ready(function() {
                 'Powered by INGInious.\n</a>');
     }
 
-    function updatePageIcon(imagePath){
+    function updatePageIcon(imagePath) {
         $('link[rel="icon"]').attr('href', imagePath);
     }
 
-    function updateTitle(){
-         let title = document.title.split("|");
-         document.title = title[0] + " |  UNCode";
+    function updateTitle() {
+        let title = document.title.split("|");
+        document.title = title[0] + " |  UNCode";
     }
 
-    function updateTemplate(){
+    function updateTemplate() {
         // This updates all necessary changes in INGInious.
         const imagePath = window.location.origin + "/UN_template/static/images/LogotipoUNAL.png";
         updateNavbarLogo(imagePath);
@@ -50,17 +50,17 @@ jQuery(document).ready(function() {
         }
     }
 
-    function addTaskContextTips(){
+    function addTaskContextHelp() {
         let taskContext = $("#context");
         const tipsButton = "<a href='#' type='button' data-toggle='modal' data-target='#task_context_help_modal'>" +
             "<i class='fa fa-question-circle'>  Help.</a>";
 
-        if(taskContext.length !== 0){
+        if (taskContext.length !== 0) {
             taskContext.before(tipsButton);
         }
     }
 
     updateTemplate();
     addTaskContextTemplate();
-    addTaskContextTips();
+    addTaskContextHelp();
 });
