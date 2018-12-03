@@ -102,31 +102,4 @@ jQuery(document).ready(function($) {
     if($('#asignaturasSIA').length>0) {
       cargarAsignaturasSIA($('#asignaturasSIA')[0].getAttribute("coodigoSIA"))
     }
-
-    /**
-     *  Inicio modificacion UNCode
-     */
-
-    // Update footer with new information.
-    $('#wrapper').find('> div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a > img')
-        .attr("src", window.location.origin + "/UN_template/static/images/LogotipoUNAL.png");
-
-    let footer = $('#footer');
-    footer.find('> div > div > div > p')
-        .html(' &copy; 2017-' + (new Date()).getFullYear() + ' Universidad Nacional de Colombia');
-    footer.find('> div > div > div > div > p')
-        .html('<a target="_blank" href="https://github.com/JuezUN/INGInious" class="navbar-link">\n' +
-        'UNCode is distributed under AGPL license' +
-        '</a>' + ' - <a target="_blank" href="http://www.inginious.org" class="navbar-link">\n' +
-        'Powered by INGInious\n</a>');
-
-    // Update favicon with UNCode logo.
-    $('link[rel="icon"]').attr('href', window.location.origin + "/UN_template/static/images/LogotipoUNAL.png");
-
-    // Modify page title. Set UNCode instead of INGInious.
-    let title = document.title.split("|");
-    document.title = title[0] + " |  UNCode";
-    /**
-     *  fin modificacion UNCode
-     */
 });
