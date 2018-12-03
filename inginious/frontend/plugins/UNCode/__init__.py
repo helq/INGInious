@@ -8,8 +8,9 @@ _TASK_CONTEXT_HELP_MODAL_HTML_FILE = "task_context_help_modal.html"
 
 
 def read_file(file_name):
-    file = open(_static_folder_path + "/" + file_name, "r")
-    return file.read()
+    with open(_static_folder_path + "/" + file_name, "r") as file:
+        content_file = file.read()
+    return content_file
 
 
 def init(plugin_manager, course_factory, client, config):
