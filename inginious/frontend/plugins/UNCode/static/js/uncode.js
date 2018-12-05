@@ -60,7 +60,22 @@ jQuery(document).ready(function () {
         }
     }
 
+    function updateCourseDocumentationLinks() {
+        // This section is to update link of "How to create task?" button in course administration.
+        // Now redirecting to our documentation.
+        let howToCreateTaskElement = $('a[href="http://inginious.readthedocs.org/en/latest/teacher_doc/task_tuto.html"]');
+        howToCreateTaskElement.attr("href", "https://github.com/JuezUN/INGInious/wiki/How-to-create-a-task");
+        howToCreateTaskElement.attr("target", "_blank");
+
+        // This section is to update link of "Documentation" button in course administration-
+        // Now redirecting to our documentation.
+        let documentationElement = $('a[href="http://inginious.readthedocs.org/en/latest/teacher_documentation.html"]');
+        documentationElement.attr("href", "https://github.com/JuezUN/INGInious/wiki/Course-administration");
+        documentationElement.attr("target", "_blank");
+    }
+
     updateTemplate();
     addTaskContextTemplate();
     addTaskContextHelp();
+    updateCourseDocumentationLinks();
 });
