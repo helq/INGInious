@@ -13,17 +13,25 @@ function setDropDownWithTheRightLanguage(key, language)
 }
 
 function changeSubmissionLanguage(key){
-    var language = getLanguageForProblemId(key);
+    var language = getCodemirrorLanguageForProblemId(key);
     var editor = codeEditors[key];
     var mode = CodeMirror.findModeByName(language);
     var editor = codeEditors[key];
     var lintingOptions = {
         async: true
     };
+    
+    //This should be first because setOption("mode", ...) triggers callbacks that call the linter
+    editor.setOption("inginiousLanguage", getLanguageForProblemId(key));
+
     editor.setOption("mode", mode.mime);
     editor.setOption("lint", lintingOptions);
     editor.setOption("gutters",["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]);
     CodeMirror.autoLoadMode(editor, mode["mode"]);
+}
+
+function getCodemirrorLanguageForProblemId(key) {
+    return convertInginiousLanguageToCodemirror(getLanguageForProblemId(key));
 }
 
 function getLanguageForProblemId(key){
@@ -32,7 +40,7 @@ function getLanguageForProblemId(key){
         return "plain";
 
     var inginiousLanguage = dropDown.options[dropDown.selectedIndex].value;
-    return convertInginiousLanguageToCodemirror(inginiousLanguage);
+    return inginiousLanguage;
 }
 
 function convertInginiousLanguageToCodemirror(inginiousLanguage) {

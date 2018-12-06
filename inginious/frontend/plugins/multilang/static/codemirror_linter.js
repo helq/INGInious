@@ -1,22 +1,33 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
+function convertInginiousLanguageToLinter(inginiousLanguage) {
+  var languages = {
+      "java7": "java",
+      "java8": "java",
+      "js": "javascript",
+      "cpp": "cpp",
+      "cpp11": "cpp",
+      "c": "c",
+      "c11": "c",
+      "python2": "python2",
+      "python3": "python3",
+      "ruby": "ruby"
+  };
 
-function webLinter(language, code, callback, options, editor){
+  return languages[inginiousLanguage];
+}
+
+function webLinter(code, callback, options, editor){
+  var language = convertInginiousLanguageToLinter(editor.getOption("inginiousLanguage"));
   var lintServerUrl = getLinterServerURL() + language;
-
+ 
   var serverCallback = function(response, status){
     var errors_and_warnings = JSON.parse(response);    
     callback(errors_and_warnings);
   }
 
   $.post(lintServerUrl, {code: code}, serverCallback);
-}
-
-function linterForLanguage(language) {
-  return function(code, callback, options, editor){
-    webLinter(language, code, callback, options, editor);    
-  }
 }
 
 (function (mod) {
@@ -29,8 +40,8 @@ function linterForLanguage(language) {
 })(function (CodeMirror) {
   "use strict";
 
-  CodeMirror.registerHelper("lint", "python", linterForLanguage("python"));
-  CodeMirror.registerHelper("lint", "text/x-java", linterForLanguage("java"));
-  CodeMirror.registerHelper("lint", "text/x-c++src", linterForLanguage("cpp"));
-  CodeMirror.registerHelper("lint", "text/x-csrc", linterForLanguage("c"));
+  CodeMirror.registerHelper("lint", "python", webLinter);
+  CodeMirror.registerHelper("lint", "text/x-java", webLinter);
+  CodeMirror.registerHelper("lint", "text/x-c++src", webLinter);
+  CodeMirror.registerHelper("lint", "text/x-csrc", webLinter);
 });
