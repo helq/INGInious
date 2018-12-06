@@ -432,7 +432,7 @@ function waitForSubmission(submissionid)
                 }
                 else
                 {
-                    displayTaskStudentAlertWithProblems($("#internalerror").text(), "danger", false);
+                    displayTaskStudentAlertWithProblems(data, "danger", false);
                     updateSubmission(submissionid, "error", "0.0", []);
                     updateTaskStatus("Failed", 0);
                     unblurTaskForm();
@@ -441,7 +441,7 @@ function waitForSubmission(submissionid)
             })
             .fail(function()
             {
-                displayTaskStudentAlertWithProblems($("#internalerror").text(), "danger", false);
+                displayTaskStudentAlertWithProblems(data, "danger", false);
                 updateSubmission(submissionid, "error", "0.0", []);
                 updateTaskStatus("Failed", 0);
                 unblurTaskForm();
@@ -622,7 +622,7 @@ function load_feedback_match(key, content) {
     load_feedback_code(key, content);
 }
 
-function load_feedback_single_line_code(key, content) {
+function load_feedback_code_single_line(key, content) {
     load_feedback_code(key, content);
 }
 
