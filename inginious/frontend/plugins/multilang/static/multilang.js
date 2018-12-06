@@ -20,9 +20,12 @@ function changeSubmissionLanguage(key){
     var lintingOptions = {
         async: true
     };
+    
+    //This should be first because setOption("mode", ...) triggers callbacks that call the linter
+    editor.setOption("inginiousLanguage", getLanguageForProblemId(key));
+
     editor.setOption("mode", mode.mime);
     editor.setOption("lint", lintingOptions);
-    editor.setOption("inginiousLanguage", getLanguageForProblemId(key));
     editor.setOption("gutters",["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"]);
     CodeMirror.autoLoadMode(editor, mode["mode"]);
 }
