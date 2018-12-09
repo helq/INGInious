@@ -153,6 +153,33 @@ $var Navbar: $:NavbarF()
 
     </div>
 
+    <div role="tabpanel" class="tab-pane" id="rubricContext">
+        <div id="rubricContextDiv">
+            <table class="table sorted_table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        $for header in rubrica.keys():
+                        <th>$header</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        $ first_level = rubrica[list(rubrica.keys())[0]]
+
+                        $for category_index in range(len(first_level)):
+                            $ category_name = list(first_level[category_index])[0]
+                            <tr>
+                                <th>$category_name</th>
+
+                                $for level_key in rubrica:
+                                    $ category_content = rubrica[level_key][category_index][category_name]
+                                    <th>$category_content</th>
+                            </tr>
+
+                    </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 
