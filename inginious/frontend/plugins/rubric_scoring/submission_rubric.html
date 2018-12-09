@@ -173,7 +173,16 @@ $var Navbar: $:NavbarF()
 
                                 $for level_key in rubrica:
                                     $ category_content = rubrica[level_key][category_index][category_name]
-                                    <td>$category_content</td>
+                                    $ category_content = "" if category_content is None else category_content
+
+                                    $ category_content_lines = category_content.split("\n")
+
+                                    <td>
+                                    <ul>
+                                    $for line in category_content_lines:
+                                        <li>$line</li>
+                                    </ul>
+                                    </td>
                             </tr>
 
                     </tbody>

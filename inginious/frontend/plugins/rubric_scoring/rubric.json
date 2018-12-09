@@ -1,7 +1,7 @@
 {
    "Grade 1:":[
       {
-         "items categoria anterior":null
+         "items categoria anterior":"No Aplica"
       },
       {
          "estructuras de datos":"Sin logica"
@@ -21,7 +21,7 @@
          "items categoria anterior":"No contiene ningun item perteneciente al grado 1"
       },
       {
-         "estructuras de datos":"- Tiene las estructuras de datos correctas pero estan mal implementadas, mal usadas o son incoherentes.- Incluye otras estructuras de datos diferentes a las necesarias para resolver el problema. No interesa como las implemente o que esten bien implementadas"
+         "estructuras de datos":"Tiene las estructuras de datos correctas pero estan mal implementadas, mal usadas o son incoherentes.\nIncluye otras estructuras de datos diferentes a las necesarias para resolver el problema. No interesa como las implemente o que esten bien implementadas"
       },
       {
          "casos de prueba":"No pasa ningun caso de prueba o moximo pasa un caso de prueba"
@@ -30,7 +30,7 @@
          "entendimiento del problema":"Se muestra una compresion muy bosica o casi nula del problema."
       },
       {
-         "estrategia usada":" - La solucion no usa una aproximacion adecuada. Puede ser usando fuerza bruta  otra aproximacion que no funciona bien. - No se ve un proposito claro en el codigo y en la estragia usada. (i.e es dificil seguir la logica del mismo)."
+         "estrategia usada":"La solucion no usa una aproximacion adecuada. Puede ser usando fuerza bruta  otra aproximacion que no funciona bien.\nNo se ve un proposito claro en el codigo y en la estragia usada. (i.e es dificil seguir la logica del mismo)."
       }
    ],
    "Grade 3:":[
@@ -52,16 +52,16 @@
    ],
    "Grade 4:":[
       {
-         "items categoria anterior":null
+         "items categoria anterior":"No Aplica"
       },
       {
-         "estructuras de datos":"- Presenta problemas en la definicion de tipo de datos, condicionales. - Presenta mas iteraciones de las necesarias"
+         "estructuras de datos":"Presenta problemas en la definicion de tipo de datos, condicionales. Presenta mas iteraciones de las necesarias"
       },
       {
          "casos de prueba":"Pasa algunos casos de prueba."
       },
       {
-         "entendimiento del problema":"- Muestra un entendimiento completo del problema a resolver. - No identifico detalles del problema que lo llevan a una solucion no AC. - Los casos borde y los limites no estan bien contemplados."
+         "entendimiento del problema":"Muestra un entendimiento completo del problema a resolver. No identifico detalles del problema que lo llevan a una solucion no AC.\nLos casos borde y los limites no estan bien contemplados."
       },
       {
          "estrategia usada":"La estrategia que usa para solucionar el problema es clara, focil de seguir y acorde con lo esperado"
@@ -69,7 +69,7 @@
    ],
    "Grade 5:":[
       {
-         "items categoria anterior":null
+         "items categoria anterior":"No Aplica"
       },
       {
          "estructuras de datos":"No presenta ningun problema con la definicion de tipo de datos, condicionales. Las iteraciones son las necesarias"
@@ -81,7 +81,7 @@
          "entendimiento del problema":"Muestra un entimiento completo del problema y su solucion tiene AC como veredicto"
       },
       {
-         "estrategia usada":null
+         "estrategia usada":"No Aplica"
       }
    ]
 }
