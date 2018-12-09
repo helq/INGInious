@@ -222,11 +222,16 @@ class SubmissionRubricPage(INGIniousAdminPage):
 
         }
 
-        rubric_wdo = RubricWdo('inginious/frontend/plugins/rubric_scoring/Rubrica.json')
+        import os 
+        dir_path = os.path.dirname(os.path.realpath(__file__))
 
+        #raise Exception("PATH" + dir_path)
+        rubric_wdo = RubricWdo('/home/mauricio/uncode/INGInious/inginious/frontend/plugins/rubric_scoring/rubric.json')
+        
+        
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).submission_rubric(
-                course, task, submission_input, problem_id, rubric_wdo, data, language)
+                course, task, submission_input, problem_id, rubric_wdo.read_data('/home/mauricio/uncode/INGInious/inginious/frontend/plugins/rubric_scoring/rubric.json'), data, language)
         )
 
 

@@ -1,6 +1,4 @@
 import json
-from pprint import pprint
-
 
 class RubricWdo():
 
@@ -11,5 +9,4 @@ class RubricWdo():
     def read_data(self, source):
         with open(source) as f:
             data = json.load(f)
-            pprint(data)
             return data
