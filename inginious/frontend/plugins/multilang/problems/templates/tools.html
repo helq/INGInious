@@ -55,12 +55,16 @@ $def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
   </div>
 </div>
 <script>
+  function getUrlWithProtocol(resourceURLWithoutProtocol) {
+      return window.location.protocol + "//" + resourceURLWithoutProtocol;
+  }
+
   function getDefaultVisualServerURL(){
-      return "$pythonTutorURL";
+      return getUrlWithProtocol("$pythonTutorURL");
   }
 
   function getLinterServerURL(){
-      return "$linterURL";
+      return getUrlWithProtocol("$linterURL");
   }
 
   function toggleElement (id) {
