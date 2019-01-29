@@ -1,0 +1,36 @@
+<div id="register_students_modal" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h3 class="modal-title"><i class="fa fa-users"> Register students uploading a CSV file.</i></h3>
+            </div>
+            <div class="modal-body text-justify text-center">
+                <div class='alert alert-warning' role='alert'><i class="fa fa-warning"></i>
+                    <strong>
+                        This tool makes the assumption you are going to upload the file as downloaded from the SIA.
+                        <br>
+                        - Make sure you saved the file as CSV file.
+                        <br>
+                        - This tool looks for the students' emails and parse them to get their usernames, so please
+                        make sure the file contains the students' emails.
+                    </strong>
+                </div>
+                <br>
+                <form id='upload_students_file' method='post' enctype='multipart/form-data'>
+                    <input type='file' id='students_file'>
+                </form>
+                <br>
+                <div class='alert' role='alert' id='register_students_alert' hidden></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                <button class='btn btn-success' form="upload_students_file" id='submit_register_students' type='submit'>
+                    Register students
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
