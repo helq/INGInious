@@ -10,6 +10,7 @@ jQuery(document).ready(function () {
     }
 
     function runRegisterStudents(data) {
+        // Function executed when the Ajax request success.
         if ("status" in data && data["status"] === "error") {
             displayRegisterStudentsAlertError(data["text"]);
         } else if ("status" in data && data["status"] === "success") {
@@ -62,7 +63,8 @@ jQuery(document).ready(function () {
         });
     }
 
-    function addRegisterStudentsButton() {
+    function appendRegisterStudentsButton() {
+        // Function intended for appending the button to open the modal in the 'students' page.
         const html = "<br><button class='btn btn-success' data-toggle='modal' data-target='#register_students_modal'>" +
             "<i class='fa fa-users'></i> Register students</button>";
         let tab_students = $('#tab_students');
@@ -70,6 +72,7 @@ jQuery(document).ready(function () {
     }
 
     function closeModal(){
+        // Function to describe the process to follow when the modal is closed.
         $('#register_students_modal').on('hidden.bs.modal', function () {
             if(register_succeeded){
                 window.location.reload();
@@ -81,6 +84,6 @@ jQuery(document).ready(function () {
     }
 
     closeModal();
-    addRegisterStudentsButton();
+    appendRegisterStudentsButton();
     submitRegisterStudents();
 });

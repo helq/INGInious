@@ -35,12 +35,27 @@ class AddCourseStudentsCsvFile(AdminApi):
 
     @staticmethod
     def _fetch_usernames_from_file(target_row, target_col, csv_file):
+        '''
+        Thi method works when the usernames are present in the file as emails, so we need to fetch just the username
+        associated to the email. (e.g. crdgonzalezca@unal.edu.co -> crdgonzalezca).
+        :param target_row:
+        :param target_col:
+        :param csv_file:
+        :return: A list containing the students' usernames.
+        '''
         length_column = len(csv_file)
         return [csv_file[row][target_col].split("@")[0] for row in range(target_row, length_column) if
                 csv_file[row][target_col]]
 
     @staticmethod
     def _search_column_on_csv_file(column_name, csv_file):
+        '''
+        Method that search for the location of cell with a specific name. This will be used to retrieve the students'
+        usernames
+        :param column_name: The name of the column you are searching for (e.g. "email").
+        :param csv_file: The file as a matrix.
+        :return: a pair with the location of the searched column. If the column is not present, returns None, None.
+        '''
         target_row = -1
         target_col = -1
         for row in csv_file:
@@ -55,5 +70,10 @@ class AddCourseStudentsCsvFile(AdminApi):
 
     @staticmethod
     def _parse_csv_file(csv_file):
+        '''
+        Method that parses the csv file, splitting each row by a colon generating a matrix.
+        :param csv_file: receives a list of strings (e.g. [",,,,", ",email, name,,"])
+        :return: Matrix with the file parse. The return value looks like: [[,,,,], [,email, name,,]]
+        '''
         csv_file = csv_file.split("\n")
         return [line.strip().split(",") for line in csv_file if line]
