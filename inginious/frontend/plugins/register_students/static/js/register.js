@@ -22,27 +22,30 @@ jQuery(document).ready(function () {
             alert_element.prop("hidden", false);
             setTimeout(function () {
                 alert_element.prop("hidden", true);
-            }, 5000)
+            }, 10000)
         } else {
             displayRegisterStudentsAlertError("An error occurred while registering. Please try again.");
         }
+    }
+
+    function getCourseId(){
+        return window.location.href.split("/")[4]; // Get the course id using the current URL.
     }
 
     function submitRegisterStudents() {
         $("form#upload_students_file").submit(function (e) {
             e.preventDefault();
             let file = $("#students_file").prop('files')[0];
-            const file_extensions = /(\.txt|\.csv)$/i;
-
+            const file_extensions = /(\.csv)$/i;
+            console.log(file);
             if (file === undefined) {
                 displayRegisterStudentsAlertError("Please select a file before submitting it.");
             } else if (!file_extensions.exec(file.name)) {
-                displayRegisterStudentsAlertError("The inserted file should be a .csv or .txt file.");
+                displayRegisterStudentsAlertError("The inserted file should be a .csv file.");
             } else {
-                let course = window.location.href.split("/")[4]; // Get the course id using the current URL.
                 let formData = new FormData();
                 formData.append("file", file);
-                formData.append("course", course);
+                formData.append("course", getCourseId());
                 $.ajax({
                     url: '/api/addStudents/',
                     method: "POST",
@@ -75,7 +78,7 @@ jQuery(document).ready(function () {
         // Function to describe the process to follow when the modal is closed.
         $('#register_students_modal').on('hidden.bs.modal', function () {
             if(register_succeeded){
-                window.location.reload();
+                window.location.replace(window.location.href);
             } else {
                 $("#students_file").val('');
                 $("#register_students_alert").prop("hidden", true);

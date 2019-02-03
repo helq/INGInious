@@ -1,5 +1,8 @@
 import os
 import web
+import re
+import hashlib
+import random
 
 from inginious.frontend.plugins.utils.admin_api import AdminApi
 from inginious.frontend.plugins.utils import get_mandatory_parameter
@@ -12,68 +15,135 @@ class AddCourseStudentsCsvFile(AdminApi):
         file = get_mandatory_parameter(web.input(), "file")
         course_id = get_mandatory_parameter(web.input(), "course")
 
+        course = self._get_course_and_check_rights(course_id)
+        if course is None:
+            return 200, {"status": "error", "text": "The course does not exist or the user does not have permissions."}
+
         text = file.decode("utf-8")
         parsed_file = self._parse_csv_file(text)
 
-        course = self.get_course_and_check_rights(course_id)
+        if not self._file_well_formatted(parsed_file):
+            return 200, {"status": "error", "text": "The file is not formatted as expected, check it is comma separated"
+                                                    " and emails are actual emails."}
 
-        target_row, target_col = self._search_column_on_csv_file("email", parsed_file)
-        if not target_row and not target_col:
-            return 200, {"status": "error", "text": "Please insert a csv file with a column named 'email'"}
+        registered_on_course = 0
+        registered_users = 0
+        for user_data in parsed_file:
+            data = self._parse_user_data(user_data)
 
-        inserted_users = 0
-        usernames = self._fetch_usernames_from_file(target_row + 1, target_col, parsed_file)
-        for username in usernames:
+            result = self._register_student(data)
+            if result:
+                registered_users += 1
             try:
-                result = self.user_manager.course_register_user(course, username, '', True)
+                result = self.user_manager.course_register_user(course, data["username"], '', True)
                 if result:
-                    inserted_users += 1
+                    registered_on_course += 1
             except:
                 pass
 
-        return 200, {"status": "success", "text": "The process succeeded. Registered students: " + str(inserted_users)}
+        message = "The process finished successfully. Registered students on the course: " + str(registered_on_course) \
+                  + "Registered students in UNCode: " + str(registered_users)
 
-    @staticmethod
-    def _fetch_usernames_from_file(target_row, target_col, csv_file):
-        '''
-        Thi method works when the usernames are present in the file as emails, so we need to fetch just the username
-        associated to the email. (e.g. crdgonzalezca@unal.edu.co -> crdgonzalezca).
-        :param target_row:
-        :param target_col:
-        :param csv_file:
-        :return: A list containing the students' usernames.
-        '''
-        length_column = len(csv_file)
-        return [csv_file[row][target_col].split("@")[0] for row in range(target_row, length_column) if
-                csv_file[row][target_col]]
+        return 200, {"status": "success", "text": message}
 
-    @staticmethod
-    def _search_column_on_csv_file(column_name, csv_file):
-        '''
-        Method that search for the location of cell with a specific name. This will be used to retrieve the students'
-        usernames
-        :param column_name: The name of the column you are searching for (e.g. "email").
-        :param csv_file: The file as a matrix.
-        :return: a pair with the location of the searched column. If the column is not present, returns None, None.
-        '''
-        target_row = -1
-        target_col = -1
-        for row in csv_file:
-            target_row += 1
-            target_col = -1
-            for cell in row:
-                target_col += 1
-                if cell == column_name:
-                    return target_row, target_col
+    def _register_student(self, data):
+        """
+        Registers the student in UNCode and sends a verification email to the user. If the user already exists, nothing
+        happens.
+        :param data: Dict containing the user data
+        :return: True if succeeded the register. If user already exists returns False.
+        """
+        success = True
 
-        return None, None
+        existing_user = self.database.users.find_one(
+            {"$or": [{"username": data["username"]}, {"email": data["email"]}]})
+        if existing_user is not None:
+            success = False
+        else:
+            passwd_hash = hashlib.sha512(data["passwd"].encode("utf-8")).hexdigest()
+            activate_hash = hashlib.sha512(str(random.getrandbits(256)).encode("utf-8")).hexdigest()
+            self.database.users.insert({"username": data["username"],
+                                        "realname": data["realname"],
+                                        "email": data["email"],
+                                        "password": passwd_hash,
+                                        "activate": activate_hash,
+                                        "bindings": {},
+                                        "language": self.user_manager._session.get("language", "en")})
+            try:
+                web.sendmail(web.config.smtp_sendername, data["email"], "Welcome on UNCode",
+                             """Welcome on UNCode!
+                             
+                             To activate your account, please click on the following link:"""
+                             + web.ctx.home + "/register?activate=" + activate_hash
+                             + """\nRemember to change your password in preference section.
+                             
+                             Note: Your password is the same as your username.""")
+            except:
+                pass
 
-    @staticmethod
-    def _parse_csv_file(csv_file):
-        '''
-        Method that parses the csv file, splitting each row by a colon generating a matrix.
-        :param csv_file: receives a list of strings (e.g. [",,,,", ",email, name,,"])
-        :return: Matrix with the file parse. The return value looks like: [[,,,,], [,email, name,,]]
-        '''
+        return success
+
+    def _check_email_format(self, email):
+        """Checks email matches a real email."""
+        email_re = re.compile(
+            r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
+            r'|^"([\001-\010\013\014\016-\037!#-\[\]-\177]|\\[\001-011\013\014\016-\177])*"'  # quoted-string
+            r')@(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?$', re.IGNORECASE)  # domain
+
+        return email_re.match(email)
+
+    def _parse_user_data(self, user_data):
+        """
+        Parses the user data into a dict.
+        :param user_data: array containing the user data, That array comes from the parsed file.
+        :return: Dict containing all parsed information.
+        """
+        name = user_data[0]
+        lastname = user_data[1]
+        email = user_data[2]
+        username = email.split("@")[0]
+
+        data = {
+            "realname": name + " " + lastname,
+            "username": username,
+            "email": email,
+            "passwd": username
+        }
+
+        return data
+
+    def _file_well_formatted(self, parsed_file):
+        """
+        Checks that the email has the required information, with three columns, emails at last column and with the right
+        format.
+        :return: True if the file correctly formatted. Otherwise returns False.
+        """
+        for data in parsed_file:
+            if len(data) != 3:
+                return False
+            elif self._check_email_format(data[2]) is None:
+                return False
+
+        return True
+
+    def _parse_csv_file(self, csv_file):
+        """
+        Method that parses the csv file, splitting each row by commas and strips every cell.
+        :param csv_file: receives a string containing all information (e.g. "  name,  lastname,  email \n")
+        :return: Matrix with the file parsed. The returned value looks like: [["name","lastnanme","email"]]
+        """
+        file_delimiter = ","
         csv_file = csv_file.split("\n")
-        return [line.strip().split(",") for line in csv_file if line]
+        return [[cell.strip() for cell in line.split(file_delimiter)] for line in csv_file if line]
+
+    def _get_course_and_check_rights(self, course_id):
+        """Retrieves the course, checks it exists and has admin rights on the course."""
+        try:
+            course = self.course_factory.get_course(course_id)
+        except:
+            return None
+
+        if not self.user_manager.has_admin_rights_on_course(course):
+            return None
+
+        return course

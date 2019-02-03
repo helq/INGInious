@@ -17,4 +17,5 @@ def init(plugin_manager, course_factory, client, config):
     plugin_manager.add_page("/api/addStudents/", AddCourseStudentsCsvFile)
 
     plugin_manager.add_hook("javascript_header", lambda: "/register_students/static/js/register.js")
+    plugin_manager.add_hook("css", lambda: "/register_students/static/css/register_students.css")
     plugin_manager.add_hook("additional_body_html", lambda: read_file(_REGISTER_STUDENTS_MODAL_HTML_FILE))
