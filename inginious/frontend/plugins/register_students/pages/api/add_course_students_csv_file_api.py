@@ -41,8 +41,8 @@ class AddCourseStudentsCsvFile(AdminApi):
             except:
                 pass
 
-        message = "The process finished successfully. Registered students on the course: " + str(registered_on_course) \
-                  + "Registered students in UNCode: " + str(registered_users)
+        message = "The process finished successfully. Registered students on the course: {0!s}. Registered students " \
+                  "in UNCode: {1!s}.".format(registered_on_course, registered_users)
 
         return 200, {"status": "success", "text": message}
 
@@ -70,14 +70,11 @@ class AddCourseStudentsCsvFile(AdminApi):
                                         "bindings": {},
                                         "language": self.user_manager._session.get("language", "en")})
             try:
+                activate_account_link = web.ctx.home + "/register?activate=" + activate_hash
                 web.sendmail(web.config.smtp_sendername, data["email"], "Welcome on UNCode",
-                             """Welcome on UNCode!
-                             
-                             To activate your account, please click on the following link:"""
-                             + web.ctx.home + "/register?activate=" + activate_hash
-                             + """\nRemember to change your password in preference section.
-                             
-                             Note: Your password is the same as your username.""")
+                             "Welcome on UNCode!\n\nTo activate your account, please click on the following link:\n{}"
+                             "\n\nRemember to change your password in preference section.\nNote: Your password is "
+                             "the same as your username.".format(activate_account_link))
             except:
                 pass
 
