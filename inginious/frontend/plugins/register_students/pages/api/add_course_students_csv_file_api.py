@@ -3,6 +3,7 @@ import web
 import re
 import hashlib
 import random
+import csv
 
 from inginious.frontend.plugins.utils.admin_api import AdminApi
 from inginious.frontend.plugins.utils import get_mandatory_parameter
@@ -129,9 +130,8 @@ class AddCourseStudentsCsvFile(AdminApi):
         :param csv_file: receives a string containing all information (e.g. "  name,  lastname,  email \n")
         :return: Matrix with the file parsed. The returned value looks like: [["name","lastnanme","email"]]
         """
-        file_delimiter = ","
-        csv_file = csv_file.split("\n")
-        return [[cell.strip() for cell in line.split(file_delimiter)] for line in csv_file if line]
+        csv_file = csv.reader(csv_file.splitlines(), delimiter=',')
+        return [[cell.strip() for cell in row if cell] for row in csv_file if row]
 
     def _get_course_and_check_rights(self, course_id):
         """Retrieves the course, checks it exists and has admin rights on the course."""
