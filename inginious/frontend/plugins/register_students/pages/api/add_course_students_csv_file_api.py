@@ -13,6 +13,9 @@ _static_folder_path = os.path.join(os.path.dirname(__file__), "static")
 
 class AddCourseStudentsCsvFile(AdminApi):
     def API_POST(self):
+        """
+        Method receiving POST request, receiving the file and course to register students on UNCode and the course.
+        """
         file = get_mandatory_parameter(web.input(), "file")
         course_id = get_mandatory_parameter(web.input(), "course")
 
@@ -27,6 +30,14 @@ class AddCourseStudentsCsvFile(AdminApi):
             return 200, {"status": "error", "text": "The file is not formatted as expected, check it is comma separated"
                                                     " and emails are actual emails."}
 
+        registered_on_course, registered_users = self.register_all_students(parsed_file, course)
+
+        message = "The process finished successfully. Registered students on the course: {0!s}. Registered students " \
+                  "in UNCode: {1!s}.".format(registered_on_course, registered_users)
+
+        return 200, {"status": "success", "text": message}
+
+    def register_all_students(self, parsed_file, course):
         registered_on_course = 0
         registered_users = 0
         for user_data in parsed_file:
@@ -42,10 +53,7 @@ class AddCourseStudentsCsvFile(AdminApi):
             except:
                 pass
 
-        message = "The process finished successfully. Registered students on the course: {0!s}. Registered students " \
-                  "in UNCode: {1!s}.".format(registered_on_course, registered_users)
-
-        return 200, {"status": "success", "text": message}
+        return registered_on_course, registered_users
 
     def _register_student(self, data):
         """
