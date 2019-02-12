@@ -1,14 +1,14 @@
-import os
 import web
 import re
 import hashlib
 import random
 import csv
 
+from os.path import dirname, join
 from inginious.frontend.plugins.utils.admin_api import AdminApi
-from inginious.frontend.plugins.utils import get_mandatory_parameter
+from inginious.frontend.plugins.utils import get_mandatory_parameter, read_file
 
-_static_folder_path = os.path.join(os.path.dirname(__file__), "static")
+_static_folder_path = join(dirname(dirname(dirname(__file__))), "static")
 
 
 class AddCourseStudentsCsvFile(AdminApi):
@@ -80,10 +80,9 @@ class AddCourseStudentsCsvFile(AdminApi):
                                         "language": self.user_manager._session.get("language", "en")})
             try:
                 activate_account_link = web.ctx.home + "/register?activate=" + activate_hash
+                email_template = read_file(_static_folder_path, "email_template.txt")
                 web.sendmail(web.config.smtp_sendername, data["email"], "Welcome on UNCode",
-                             "Welcome on UNCode!\n\nTo activate your account, please click on the following link:\n{}"
-                             "\n\nRemember to change your password in preference section.\nNote: Your password is "
-                             "the same as your username.".format(activate_account_link))
+                             email_template.format(activate_account_link))
             except:
                 pass
 
