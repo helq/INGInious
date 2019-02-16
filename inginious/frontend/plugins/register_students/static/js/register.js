@@ -37,7 +37,6 @@ jQuery(document).ready(function () {
             e.preventDefault();
             let file = $("#students_file").prop('files')[0];
             const file_extensions = /(\.csv)$/i;
-            console.log(file);
             if (file === undefined) {
                 displayRegisterStudentsAlertError("Please select a file before submitting it.");
             } else if (!file_extensions.exec(file.name)) {
