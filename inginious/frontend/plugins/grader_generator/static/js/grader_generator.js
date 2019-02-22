@@ -143,3 +143,20 @@ function studio_update_grader_files()
     }, "json");
 
 }
+
+
+function studio_update_container_name()
+{
+  // Check container (environment) name, and hide all test containers
+  let container_name = $("#environment").val();
+  let test_containers = $(".grader_form");
+  for(let cont = 0; cont < test_containers.length; cont++){
+    test_containers[cont].style.display = "none";
+  }
+  if(container_name === "HDL"){
+    try { $("#hdl_grader_form")[0].style.display = "block"; } catch {};
+  }
+  if(container_name === "multiple_languages"){
+    try{ $("#multilang_grader_form")[0].style.display = "block"; } catch {};
+  }
+}

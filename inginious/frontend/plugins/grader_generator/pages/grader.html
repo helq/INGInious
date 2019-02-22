@@ -29,6 +29,8 @@ $#
     </div>
 </div>
 
+<div class="grader_form" id="multilang_grader_form">
+
 <div class="form-group">
     <label for="grader_compute_diffs" class="col-sm-4 control-label">Compute diffs</label>
 
@@ -108,6 +110,8 @@ $#
     </div>
 </div>
 
+</div>
+
 <script type="text/javascript">
     let grader_test_cases = $:{grader_test_cases_dump};
 
@@ -121,6 +125,7 @@ $#
 
         $$('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
             if (e.target.hash === '#tab_grader') {
+                studio_update_container_name();
                 studio_update_grader_problems();
                 studio_update_grader_files();
             }
