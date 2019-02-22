@@ -61,8 +61,8 @@ def on_task_editor_submit(course, taskid, task_data, task_fs):
         try:
             form.parse()
             form.validate()
-        except InvalidGraderError as e:
-            return json.dumps({'status': 'error', 'message': e.message})
+        except InvalidGraderError as error:
+            return json.dumps({'status': 'error', 'message': error.message})
         
         # Update the task_data        
 
