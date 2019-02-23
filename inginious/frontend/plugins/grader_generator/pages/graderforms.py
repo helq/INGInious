@@ -1,9 +1,16 @@
+import os
 import json
 from collections import OrderedDict
 from abc import ABC, abstractmethod
 from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
+import tempfile
 
 # TODO: Replace this class and all json dumps to main class only one time
+
+_PLUGIN_PATH = os.path.dirname(__file__)
+_BASE_RENDERER_PATH = _PLUGIN_PATH
+_MULTILANG_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.txt')
+_HDL_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'hdl_file_template.txt')
 
 class InvalidGraderError(Exception):
     def __init__(self, message, *args):
@@ -12,20 +19,52 @@ class InvalidGraderError(Exception):
         self.message = message
 
 
-class GraderForm(ABC):
+class GraderForm:
     """ This class manage the form for the creation of the grader """
 
     def __init__(self, task_data, task_fs):
         self.task_data = dict(task_data)
         self.task_fs = task_fs
-
-    @abstractmethod
+    
     def parse(self):
-        pass
+        # Convert diff_max_lines to integer if this fail the string isn't an integer
+        try:
+            self.task_data["grader_diff_max_lines"] = int(self.task_data.get("grader_diff_max_lines", None))
+        except (ValueError, TypeError):
+            raise InvalidGraderError("'Maximum diff lines' must be an integer")
 
-    @abstractmethod
+        # Convert diff_context_lines to integer if this fails the string isn't an integer
+        try:
+            self.task_data["grader_diff_context_lines"] = int(self.task_data.get("grader_diff_context_lines", None))
+        except (ValueError, TypeError):
+            raise InvalidGraderError("'Diff context lines' must be an integer")
+
+        # Parse checkboxes 
+        self.task_data["grader_compute_diffs"] = "grader_compute_diffs" in self.task_data
+        self.task_data["treat_non_zero_as_runtime_error"] = "treat_non_zero_as_runtime_error" in self.task_data
+
     def validate(self):
-        pass
+        # Check if grader problem was set
+        if 'grader_problem_id' not in self.task_data:
+            raise InvalidGraderError("Grader: the problem was not specified")
+        
+        # The problem_id does not exists
+        if self.task_data['grader_problem_id'] not in self.task_data['problems']:
+            print(self.task_data)
+            raise InvalidGraderError("Grader: problem does not exist")
+
+        # check the type of problem. (written code or project folder only options)
+        problem_type = self.task_data["problems"][self.task_data["grader_problem_id"]]["type"]
+
+        if problem_type not in ['code_multiple_languages', 'code_file_multiple_languages']:
+            raise InvalidGraderError("Grader: only Code Multiple Language and Code File Multiple Language problems are supported")
+
+        # Check values that must be positive
+        if self.task_data["grader_diff_max_lines"] <= 0:
+            raise InvalidGraderError("'Maximum diff lines' must be positive")
+
+        if self.task_data["grader_diff_context_lines"] <= 0:
+            raise InvalidGraderError("'Diff context lines' must be positive")
 
 
 class MultilangForm(GraderForm):
@@ -84,48 +123,72 @@ class MultilangForm(GraderForm):
         """
         This function parse the data from task_data i.e (test_cases)
         """
-        # Convert diff_max_lines to integer if this fail the string isn't an integer
-        try:
-            self.task_data["grader_diff_max_lines"] = int(self.task_data.get("grader_diff_max_lines", None))
-        except (ValueError, TypeError):
-            raise InvalidGraderError("'Maximum diff lines' must be an integer")
-
-        # Convert diff_context_lines to integer if this fails the string isn't an integer
-        try:
-            self.task_data["grader_diff_context_lines"] = int(self.task_data.get("grader_diff_context_lines", None))
-        except (ValueError, TypeError):
-            raise InvalidGraderError("'Diff context lines' must be an integer")
-
-        # Parse checkboxes 
-        self.task_data["grader_compute_diffs"] = "grader_compute_diffs" in self.task_data
-        self.task_data["treat_non_zero_as_runtime_error"] = "treat_non_zero_as_runtime_error" in self.task_data
-
+        super(MultilangForm, self).parse()
         # Parse test cases
         self.task_data['grader_test_cases'] = self.parse_and_validate_test_cases()
 
-    def validate(self):
-        """
-        This function validates the data from task_data
-        """
-        # Check if grader problem was set
-        if 'grader_problem_id' not in self.task_data:
-            raise InvalidGraderError("Grader: the problem was not specified")
-        
-        # The problem_id does not exists
-        if self.task_data['grader_problem_id'] not in self.task_data['problems']:
-            print(self.task_data)
-            raise InvalidGraderError("Grader: problem does not exist")
-
-        # check the type of problem. (written code or project folder only options)
-        problem_type = self.task_data["problems"][self.task_data["grader_problem_id"]]["type"]
-
-        if problem_type not in ['code_multiple_languages', 'code_file_multiple_languages']:
-            raise InvalidGraderError("Grader: only Code Multiple Language and Code File Multiple Language problems are supported")
-
-        # Check values that must be positive
-        if self.task_data["grader_diff_max_lines"] <= 0:
-            raise InvalidGraderError("'Maximum diff lines' must be positive")
-
-        if self.task_data["grader_diff_context_lines"] <= 0:
-            raise InvalidGraderError("'Diff context lines' must be positive")
+    def generate_grader(self):
+        """ This method generates a grader through the form data """
     
+        problem_id = self.task_data["grader_problem_id"]
+        test_cases = [(test_case["input_file"], test_case["output_file"])
+                    for test_case in self.task_data["grader_test_cases"]]
+        weights = [test_case["weight"] for test_case in self.task_data["grader_test_cases"]]
+        options = {
+            "compute_diff": self.task_data["grader_compute_diffs"],
+            "treat_non_zero_as_runtime_error": self.task_data["treat_non_zero_as_runtime_error"],
+            "diff_max_lines": self.task_data["grader_diff_max_lines"],
+            "diff_context_lines": self.task_data["grader_diff_context_lines"],
+            "output_diff_for": [test_case["input_file"] for test_case in self.task_data["grader_test_cases"]
+                                if test_case["diff_shown"]]
+        }
+
+        with open(_MULTILANG_FILE_TEMPLATE_PATH, "r") as template, tempfile.TemporaryDirectory() as temporary:
+            run_file_template = template.read()
+
+            run_file_name = 'run'
+            target_run_file = os.path.join(temporary, run_file_name)
+
+            with open(target_run_file, "w") as f:
+                f.write(run_file_template.format(
+                    problem_id=repr(problem_id), test_cases=repr(test_cases),
+                    options=repr(options), weights=repr(weights)))
+            
+            self.task_fs.copy_to(temporary)
+
+class HDLForm(GraderForm):
+    def parse(self):
+        super(HDLForm, self).parse()
+
+        if not self.task_data['testbench_file_name']:
+            raise InvalidGraderError("No testbench was selected for testing")
+        
+        if not self.task_data['hdl_expected_output']:
+            raise InvalidGraderError("No expected output was selected for testing")
+        
+    def generate_grader(self):
+        
+        problem_id = self.task_data["grader_problem_id"]
+        testbench_file_name = self.task_data["testbench_file_name"]
+        hdl_expected_output = self.task_data["hdl_expected_output"]
+        options = {
+            "compute_diff": self.task_data["grader_compute_diffs"],
+            "treat_non_zero_as_runtime_error": self.task_data["treat_non_zero_as_runtime_error"],
+            "diff_max_lines": self.task_data["grader_diff_max_lines"],
+            "diff_context_lines": self.task_data["grader_diff_context_lines"],
+            "output_diff_for": [testbench_file_name],
+            "entity_name" : self.task_data.get('vhdl_entity', None)
+        }
+
+        with open(_HDL_FILE_TEMPLATE_PATH, "r") as template, tempfile.TemporaryDirectory() as temporary:
+            run_file_template = template.read()
+
+            run_file_name = 'run'
+            target_run_file = os.path.join(temporary, run_file_name)
+
+            with open(target_run_file, "w") as f:
+                f.write(run_file_template.format(
+                    problem_id=repr(problem_id), testbench=repr(testbench_file_name),
+                    options=repr(options), output=repr(hdl_expected_output)))
+            
+            self.task_fs.copy_to(temporary)

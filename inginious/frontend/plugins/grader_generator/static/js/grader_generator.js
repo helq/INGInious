@@ -123,9 +123,13 @@ function studio_update_grader_files()
     }, function(files) {
         let inputFileSelect = $("#grader_test_case_in");
         let outputFileSelect = $("#grader_test_case_out");
+        let testbechFileSelect = $("#testbench_file_name");
+        let hdlOutputFileSelect = $("#hdl_expected_output");
 
         inputFileSelect.empty();
         outputFileSelect.empty();
+        testbechFileSelect.empty();
+        hdlOutputFileSelect.empty();
 
         $.each(files, function(index, file) {
           if (file.is_directory) {
@@ -139,6 +143,8 @@ function studio_update_grader_files()
 
           inputFileSelect.append(entry);
           outputFileSelect.append(entry.clone());
+          testbechFileSelect.append(entry.clone());
+          hdlOutputFileSelect.append(entry.clone());
         });
     }, "json");
 
