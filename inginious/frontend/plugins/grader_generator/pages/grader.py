@@ -49,8 +49,6 @@ def on_task_editor_submit(course, taskid, task_data, task_fs):
     """ This method use the form from the plugin to generate
     the grader (code to use the utilities from the containers i.e multilang) """
 
-    print(task_data)
-
     # Create form object
     task_data["generate_grader"] = "generate_grader" in task_data
 
