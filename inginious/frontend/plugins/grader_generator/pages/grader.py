@@ -14,17 +14,18 @@ _RUN_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.txt')
 
 def generate_grader(form):
     """ This method generates a grader through the form data """
-    
+
+    grader_test_cases = form.task_data["grader_test_cases"]
     problem_id = form.task_data["grader_problem_id"]
     test_cases = [(test_case["input_file"], test_case["output_file"])
-                  for test_case in form.task_data["grader_test_cases"]]
-    weights = [test_case["weight"] for test_case in form.task_data["grader_test_cases"]]
+                  for test_case in grader_test_cases]
+    weights = [test_case["weight"] for test_case in grader_test_cases]
     options = {
         "compute_diff": form.task_data["grader_compute_diffs"],
         "treat_non_zero_as_runtime_error": form.task_data["treat_non_zero_as_runtime_error"],
         "diff_max_lines": form.task_data["grader_diff_max_lines"],
         "diff_context_lines": form.task_data["grader_diff_context_lines"],
-        "output_diff_for": [test_case["input_file"] for test_case in form.task_data["grader_test_cases"]
+        "output_diff_for": [test_case["input_file"] for test_case in grader_test_cases
                             if test_case["diff_shown"]]
     }
 
