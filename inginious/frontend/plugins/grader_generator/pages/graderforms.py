@@ -42,7 +42,7 @@ class MultilangForm(GraderForm):
         return grader_test_cases
 
     def parse_and_validate_test_cases(self):
-        """ This method parse all the test cases """
+        """ This method parses all the test cases. """
         test_cases = []
         for _, test_case in self.tests_to_dict().items():
             # Parsing
