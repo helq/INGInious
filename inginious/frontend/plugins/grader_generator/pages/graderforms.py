@@ -1,9 +1,6 @@
-import json
 from collections import OrderedDict
 from abc import ABC, abstractmethod
 from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
-
-# TODO: Replace this class and all json dumps to main class only one time
 
 class InvalidGraderError(Exception):
     def __init__(self, message, *args):

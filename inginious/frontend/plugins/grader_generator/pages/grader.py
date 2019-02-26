@@ -1,9 +1,6 @@
 import json
 import tempfile
 import os
-from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
-from collections import OrderedDict
-import re
 from .graderforms import MultilangForm, InvalidGraderError
 
 _PLUGIN_PATH = os.path.dirname(__file__)
