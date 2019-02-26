@@ -10,7 +10,9 @@ class InvalidGraderError(Exception):
 
 
 class GraderForm(ABC):
-    """ This class manage the form for the creation of the grader """
+    """ This class represents an abstract class in order to model the different GraderForms. 
+    A form refers to the data received from the grader form and the way that data should be parsed and validated. 
+    """
 
     def __init__(self, task_data, task_fs):
         self.task_data = dict(task_data)
