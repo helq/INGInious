@@ -60,6 +60,13 @@ jQuery(document).ready(function () {
         }
     }
 
+    function addTaskResultLegendButton() {
+        let taskAlert = $("#task_alert");
+        const legendModalButton = "<a href='#' type='button' data-toggle='modal' data-target='#task_result_legend_modal'>" +
+            "<i class='fa fa-question-circle'>  Understand your task result.</a>";
+        taskAlert.before(legendModalButton);
+    }
+
     function updateCourseDocumentationLinks() {
         // This section is to update link of "How to create task?" button in course administration.
         // Now redirecting to our documentation.
@@ -78,4 +85,5 @@ jQuery(document).ready(function () {
     addTaskContextTemplate();
     addTaskContextHelp();
     updateCourseDocumentationLinks();
+    addTaskResultLegendButton();
 });
