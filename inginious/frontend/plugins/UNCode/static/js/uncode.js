@@ -31,7 +31,7 @@ jQuery(document).ready(function () {
 
     function updateTemplate() {
         // This updates all necessary changes in INGInious.
-        const imagePath = window.location.origin + "/UN_template/static/images/LogotipoUNAL.png";
+        const imagePath = window.location.origin + "/UNCode/static/images/LogotipoUNAL.png";
         updateNavbarLogo(imagePath);
         updatePageIcon(imagePath);
         updateFooter();
