@@ -59,8 +59,6 @@ def on_task_editor_submit(course, taskid, task_data, task_fs):
             form.validate()
         except InvalidGraderError as e:
             return json.dumps({'status': 'error', 'message': e.message})
-        
-        # Update the task_data        
 
         # Generate the grader
         if form.task_data['generate_grader']:
