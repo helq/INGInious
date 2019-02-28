@@ -10,7 +10,9 @@ class InvalidGraderError(Exception):
 
 
 class GraderForm(ABC):
-    """ This class manage the form for the creation of the grader """
+    """ This class represents an abstract class in order to model the different GraderForms. 
+    A form refers to the data received from the grader form and the way that data should be parsed and validated. 
+    """
 
     def __init__(self, task_data, task_fs):
         self.task_data = dict(task_data)
@@ -27,7 +29,7 @@ class GraderForm(ABC):
 
 class MultilangForm(GraderForm):
     def tests_to_dict(self):
-        """ This method organize the tests information to a dictionary """
+        """ This method parses the tests cases information in a dictionary """
 
         # Transform grader_test_cases[] entries into an actual array (they are sent as separate keys).
         grader_test_cases = CourseEditTask.dict_from_prefix("grader_test_cases", self.task_data) or OrderedDict()
@@ -40,7 +42,7 @@ class MultilangForm(GraderForm):
         return grader_test_cases
 
     def parse_and_validate_test_cases(self):
-        """ This method parse all the test cases """
+        """ This method parses all the test cases. """
         test_cases = []
         for _, test_case in self.tests_to_dict().items():
             # Parsing
