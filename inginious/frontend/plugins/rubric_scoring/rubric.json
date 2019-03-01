@@ -1,87 +1,87 @@
 {
    "Grade 1:":[
       {
-         "items categoria anterior":"No Aplica."
+         "Level before":"Does not apply."
       },
       {
-         "estructuras de datos":"Sin lógica."
+         "Data structures":"No logic."
       },
       {
-         "casos de prueba":"No pasa ningún caso de prueba."
+         "Test cases":"Does not pass any test case."
       },
       {
-         "entendimiento del problema":"Se muestra una compresión nula del problema."
+         "Understanding of the problem":"It shows not understanding of the problem."
       },
       {
-         "estrategia usada":"Puede ser la solución de otro problema."
+         "Strategy used":"Could be a strategy to solve an other problem."
       }
    ],
    "Grade 2:":[
       {
-         "items categoria anterior":"No contiene ningún item perteneciente al grado 1."
+         "Level before":"Does not contain ay item belonging to the level 1."
       },
       {
-         "estructuras de datos":"Tiene las estructuras de datos correctas pero estan mal implementadas, mal usadas o son incoherentes.\nIncluye otras estructuras de datos diferentes a las necesarias para resolver el problema. No interesa como las implemente o que esten bien implementadas."
+         "Data structures":"Has the right data estructures but they are not well implemented, bad used or they are not coherent."
       },
       {
-         "casos de prueba":"No pasa ningún caso de prueba o máximo pasa un caso de prueba."
+         "Test cases":"Does not pass any test case or pases one or  two maximum."
       },
       {
-         "entendimiento del problema":"Se muestra una compresión muy básica o casi nula del problema."
+         "Understanding of the problem":"It shows a very basic or alomost null understanding of the problem to be solved."
       },
       {
-         "estrategia usada":"La solución no usa una aproximación adecuada. Puede ser usando fuerza bruta u otra aproximación que no funcione bien.\nNo se ve un propósito claro en el código y en la estrategia usada. (i.e es difícil seguir la lógica del mismo)."
+         "Strategy used":"The solution does not use a right approach to solve the problem. Could have been using brute force or an other approache that does not work.\nTher is not a clear purpose in the source code and in the strategy (i.e difficult to follow)."
       }
    ],
    "Grade 3:":[
       {
-         "items categoria anterior":"No contiene ningún item del grado 2."
+         "Level before":"Does not contain any item from the level 2."
       },
       {
-         "estructuras de datos":"Las estructuras necesarias para solucionar el problema existen y estan bien implementadas."
+         "Data structures":"The right structures need to solve the problem exist and are well implemented."
       },
       {
-         "casos de prueba":"Puede pasar algunos casos de prueba."
+         "Test cases":"Could pass some test cases."
       },
       {
-         "entendimiento del problema":"Se muestra una compresión parcial del problema a solucionar."
+         "Understanding of the problem":"Shows a partial understanding of how to solve the problem."
       },
       {
-         "estrategia usada":"La solución usa una estrategia medianamente adecuada."
+         "estrategia usada":"The strategy used to solve the problem is close to the one proposed."
       }
    ],
    "Grade 4:":[
       {
-         "items categoria anterior":"No Aplica."
+         "Level before":"Does not apply"
       },
       {
-         "estructuras de datos":"Presenta problemas en la definición de tipo de datos, condicionales. Presenta mas iteraciones de las necesarias."
+         "Data structures":"Has problems with the definition of the data types, conditionals or number of cycles."
       },
       {
-         "casos de prueba":"Pasa algunos casos de prueba."
+         "Test cases":"Passes some test cases."
       },
       {
-         "entendimiento del problema":"Muestra un entendimiento completo del problema a resolver. No identificó detalles del problema por lo que lo llevan a una solución no aceptada.\nLos casos borde y los límites no estan bien contemplados."
+         "Understanding of the problem":"Shows a complete understanding of how to solve the problem\nDoes not identify small details like border cases."
       },
       {
-         "estrategia usada":"La estrategia que usa para solucionar el problema es clara, fácil de seguir y acorde con lo esperado."
+         "Strategy used":"The strategy used to solve the problem is clear, easy to follow and according to the expected.."
       }
    ],
    "Grade 5:":[
       {
-         "items categoria anterior":"No Aplica."
+         "Level before":"Does not apply."
       },
       {
-         "estructuras de datos":"No presenta ningún problema con la definición de tipo de datos, condicionales. Las iteraciones son las necesarias."
+         "Data structures":"Does not have any prolbme with data type, conditionals, cycles, etc."
       },
       {
-         "casos de prueba":"Pasa todos los casos de prueba de manera eficiente."
+         "Test cases":"Passes all test cases."
       },
       {
-         "entendimiento del problema":"Muestra un entimiento completo del problema y su solucion tiene aceptada como veredicto."
+         "Understanding of the problem":"Shows a full understanding of how to solve the problem."
       },
       {
-         "estrategia usada":"No Aplica."
+         "Strategy used":"The strategy used to solve the problem is clear, easy to read and according to the expected."
       }
    ]
 }
