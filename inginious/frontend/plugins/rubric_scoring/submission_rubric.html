@@ -1,4 +1,4 @@
-$def with (course, task_id, submission_code, problem_id, rubrica, data, language)
+$def with (course, task_id, submission_code, problem_id, rubrica, data, language, comment, score)
 
 $var title: $:course.get_name(user_manager.session_language()) - Rubric Scoring
 
@@ -59,7 +59,7 @@ $var Navbar: $:NavbarF()
             <div>
 
                 <div class="col-xs-8 col-sm-4 col-lg-3">
-
+                    <!--general information div-->
                     <div >
 
                         <h3>General Information</h3>
@@ -86,7 +86,21 @@ $var Navbar: $:NavbarF()
                             </tr>
                         </table>
                     </div>
+
+                    <div >
+                        <h3>Comments</h3>
+
+                        <textarea rows="4" cols="35" class="my-text-area" id="text_comment">
+                            $comment
+                        </textarea>
+                        <a href="#grade_edit_submit_status"
+                           class="btn btn-primary btn-block"
+                           type="button" onclick="comment_submit()">
+                            <i class="fa fa-save"></i> Comment
+                        </a>
+                    </div>
                 </div>
+                <!--information div-->
                 <div class="col-xs-8 col-sm-4 col-lg-3">
                     <div >
 
@@ -113,38 +127,49 @@ $var Navbar: $:NavbarF()
                     </div>
 
                 </div>
-
+                <!--score div-->
                 <div class="container-div col-xs-8 col-sm-4 col-lg-3" style="padding-bottom: 50px;">
 
                     <h3>Scoring</h3>
 
 
-                        <label>
-                            <input value="grade1"  name="grade"  type="radio">
+                        <label class="radio-btn-pad">
+                            <input value="grade1"  name="grade"  type="radio" id="grade1">
                             Grade 1
 
                         </label>
                         <br>
 
-                         <label>
-                            <input value="grade2" name="grade" type="radio">
+                         <label class="radio-btn-pad">
+                            <input value="grade2" name="grade" type="radio" id="grade2">
                             Grade 2
 
                         </label>
                         <br>
-                         <label>
-                            <input value="grade3" name="grade" type="radio">
+                         <label class="radio-btn-pad">
+                            <input value="grade3" name="grade" type="radio"  id="grade3">
                             Grade 3
 
-                        </label>
+                        </label >
                         <br>
-                         <label>
-                            <input value="grade4" name="grade" type="radio">
+                         <label class="radio-btn-pad">
+                            <input value="grade4" name="grade" type="radio" id="grade4">
                             Grade 4
 
                         </label>
 
-                            <a href="#grade_edit_submit_status" class="btn btn-primary btn-block" type="button" onclick="grade_submit()"><i class="fa fa-save"></i> Grade</a>
+                        <br>
+                         <label class="radio-btn-pad">
+                            <input value="grade5" name="grade" type="radio" id="grade5">
+                            Grade 5
+
+                        </label>
+
+                            <a href="#grade_edit_submit_status"
+                               class="btn btn-primary btn-block"
+                               type="button" onclick="grade_submit()">
+                                <i class="fa fa-save"></i> Grade
+                            </a>
 
                 </div>
             </div>
@@ -194,8 +219,11 @@ $var Navbar: $:NavbarF()
 
 <script type="text/javascript">
     var language = convertInginiousLanguageToCodemirror("$language");
-
+    //alert("$score");
     registerCodeEditor(document.getElementById("codeTextArea1"), language);
+
+    document.getElementById("$score").checked = true;
+
 </script>
 
 <script type="text/javascript">
@@ -217,10 +245,9 @@ $var Navbar: $:NavbarF()
 
 
         jQuery.ajax({
-            success:  function(data)
-                      {
-                        studio_display_task_submit_message_rubric(content_info, "info", true);
-                      },
+            success:  function(data) {
+                studio_display_task_submit_message_rubric(content_info, "info", true);
+            },
             method:   "POST",
 
             data:     {"grade": value_radio},
@@ -254,8 +281,41 @@ $var Navbar: $:NavbarF()
 
         }
     };
+
+    function comment_submit() {
+
+        var txt_comment = document.getElementById("text_comment");
+         var content_info = "Comment as stored";
+        var content_danger = "Error at saving Comment, please try again."
+        // alert(txt_comment.value);
+
+        jQuery.ajax({
+            success:  function(data) {
+                studio_display_task_submit_message_rubric(content_info, "info", true);
+            },
+            method:   "POST",
+
+            data:     {"comment": txt_comment.value},
+
+            error: function(request, status, error){
+                studio_display_task_submit_message_rubric(content_danger, "danger", true);
+            }
+        })
+    }
 </script>
 
+<style>
+.radio-btn-pad{
+    margin-bottom: 5px;
+}
 
+.my-text-area {
+    overflow: auto;
+    resize: none;
+    margin-bottom: 4px;
+}
+
+
+</style>
 
 

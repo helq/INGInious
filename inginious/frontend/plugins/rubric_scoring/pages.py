@@ -183,10 +183,16 @@ class SubmissionRubricPage(INGIniousAdminPage):
         course, task = self.get_course_and_check_rights(course_id, task_id)
         data = web.input()
 
-        self.database.submissions.update(
-            {"_id": ObjectId(submission_id)},
-            {"$set": {"custom.rubric_score": data["grade"]}
-             })
+        if "grade" in data:
+            self.database.submissions.update(
+                {"_id": ObjectId(submission_id)},
+                {"$set": {"custom.rubric_score": data["grade"]}
+                 })
+        elif "comment" in data:
+            self.database.submissions.update(
+                {"_id": ObjectId(submission_id)},
+                {"$set": {"custom.comment": data["comment"]}
+                 })
 
         return self.page(course, task, submission_id)
 
@@ -212,6 +218,14 @@ class SubmissionRubricPage(INGIniousAdminPage):
         submission = self.submission_manager.get_submission( submission_id, user_check=False)
         submission_input = self.submission_manager.get_input_from_submission(submission)
 
+        comment = ""
+        if ('custom' in submission and 'comment' in submission['custom']):
+            comment = submission['custom']['comment']
+
+        score = "No grade"
+        if ('custom' in submission and 'rubric_score' in submission['custom']):
+            score = submission['custom']['rubric_score']
+
         language =  submission_input['input'][problem_id + '/language']
         data = {
             "url": 'rubric_scoring',
@@ -231,7 +245,7 @@ class SubmissionRubricPage(INGIniousAdminPage):
         
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).submission_rubric(
-                course, task, submission_input, problem_id, rubric_wdo.read_data('inginious/frontend/plugins/rubric_scoring/rubric.json'), data, language)
+                course, task, submission_input, problem_id, rubric_wdo.read_data('inginious/frontend/plugins/rubric_scoring/rubric.json'), data, language, comment, score)
         )
 
 
@@ -429,6 +443,14 @@ class SubmissionRubricPageTemp(INGIniousAdminPage):
 
         submission = self.get_submission( submission_id)
 
+        comment = ""
+        if('custom' in submission and 'comment' in submission['custom']):
+            comment = submission['custom']['comment']
+
+        score = "No grade"
+        if ('custom' in submission and 'rubric_score' in submission['custom']):
+            score = submission['custom']['rubric_score']
+
         submission_input = self.submission_manager.get_input_from_submission(submission)
         print ("submission_code", submission_input)
         print ("------------")
@@ -449,6 +471,6 @@ class SubmissionRubricPageTemp(INGIniousAdminPage):
 
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).submission_rubric(
-                course, task, submission_input, problem_id,  rubric_wdo, data, language)
+                course, task, submission_input, problem_id,  rubric_wdo, data, language, comment.strip(), score)
         )
 
