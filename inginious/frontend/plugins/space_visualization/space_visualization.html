@@ -30,7 +30,7 @@ $var Navbar: $:NavbarF()
     <div role="tabpanel" class="tab-pane active" id="visualization">
         <div  class="tooltip" ></div>
         <div  id="my_div" ><!-- Plotly chart will be drawn inside this DIV --> here
-            </div>
+        </div>
     </div>
 
      <div role="tabpanel" class="tab-pane " id="sourceCode">
@@ -60,46 +60,44 @@ $var Navbar: $:NavbarF()
 
         <h3>Distance Selection</h3>
 
-            <label>
-                <input value="jaro"  name="distance"  type="radio" checked="checked">
+            <label class="radio-btn-pad">
+                <input value="jaro"  name="distance"  type="radio" checked="checked" class="radio-btn-pad">
                 Jaro
 
             </label>
             <br>
 
-             <label>
-                <input value="lcl" name="distance" type="radio">
+             <label class="radio-btn-pad">
+                <input value="lcl" name="distance" type="radio" class="radio-btn-pad">
                 Lcl
 
             </label>
 
-                <a href="#calculate_distances" class="btn btn-primary btn-block" type="button" onclick="calculate_distance()"><i class="fa"></i> Calculate Distances</a>
+                <a href="#calculate_distances" class="btn btn-primary btn-block btn-padding" type="button" onclick="calculate_distance()"><i class="fa"></i> Calculate Distances</a>
 
     </div>
            <div class="col-xs-8 col-sm-4 col-lg-3">
 
                 <h3>Visual Settings</h3>
-                <label>
-                <input value="visualization1"  name="visualization"  type="radio" checked="checked">
-                visualization1
-
+                <label class="radio-btn-pad">
+                    <input value="visualization1"  name="visualization"  type="radio" checked="checked" >
+                    visualization1
                 </label>
             <br>
-             <label>
+             <label class="radio-btn-pad">
                 <input value="visualization2" name="visualization" type="radio">
                 visualization2
-
             </label>
 
-                <a href="#visualice" class="btn btn-primary btn-block" type="button" onclick="do_graph()"><i class="fa"></i> Visualice</a>
+                <a href="#visualice" class="btn btn-primary btn-block btn-padding" type="button" onclick="do_graph()"><i class="fa"></i> Visualice</a>
 
         </div>
 
     </div>
 </form>
  <!--<script type="text/javascript" src="d3.v2.min.js"></script>-->
-<script type ="text/javascript" src="/static/space_visualization/js/d3.v3.min.js"></script>
-
+<!--<script type ="text/javascript" src="/space_visualization/js/d3.v3.min.js"></script>-->
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
 <script type ="text/javascript">
 
@@ -108,7 +106,7 @@ $var Navbar: $:NavbarF()
     fbBlue = d3.rgb("#3b5998"),
     fill = [fbBlue.brighter(2),fbBlue.brighter(),fbBlue,fbBlue.darker()];
 
-var nodes = d3.range(211,261).map(function(i){
+    var nodes = d3.range(211,261).map(function(i){
       return {
         userID: i,
         in: 0,
@@ -453,3 +451,51 @@ var links = [	{source:27, target:28},
 
     };
 </script>
+
+
+<style>
+.radio-btn-pad{
+    margin-bottom: 10px;
+}
+
+.btn-padding {
+    margin-bottom: 100px;
+}
+/*space_visualization.css*/
+
+.visualization-plot {
+    height: 500px;
+    width: 100%;
+}
+</style>
+
+<style>
+/*svg.css    */
+svg circle.node {
+  fill: #3b5998;
+  stroke: #1b3978;
+  stroke-width: 1.5px;
+}
+
+svg line.link {
+  stroke: #222;
+  stroke-opacity: .6;
+  stroke-width: 2px;
+}
+
+div.tooltip {
+  position: absolute;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  width: 80px;
+  height: 28px;
+  padding: 2px;
+  font: 12px sans-serif;
+  background: #8fb3de;
+  border: 0px;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+</style>

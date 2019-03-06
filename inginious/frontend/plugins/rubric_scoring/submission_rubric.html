@@ -40,7 +40,7 @@ $var Navbar: $:NavbarF()
                 </div>
                 <div class="panel-body">
                     <div class="student_view">
-                        <p>print hi baker</p>
+                        <!--<p>print hi baker</p>-->
 
                     </div>
 
@@ -90,9 +90,7 @@ $var Navbar: $:NavbarF()
                     <div >
                         <h3>Comments</h3>
 
-                        <textarea rows="4" cols="35" class="my-text-area" id="text_comment">
-                            $comment
-                        </textarea>
+                        <textarea rows="4" cols="35" class="my-text-area" id="text_comment">$comment</textarea>
                         <a href="#grade_edit_submit_status"
                            class="btn btn-primary btn-block"
                            type="button" onclick="comment_submit()">
@@ -285,8 +283,15 @@ $var Navbar: $:NavbarF()
     function comment_submit() {
 
         var txt_comment = document.getElementById("text_comment");
-         var content_info = "Comment as stored";
+        var content_info = "Comment as stored";
         var content_danger = "Error at saving Comment, please try again."
+        var content_warning = "Error at saving Comment, comment to long, max length of comment is 1000."
+        var maxTam = 1000;
+
+        if (txt_comment.value.length > maxTam) {
+            studio_display_task_submit_message_rubric(content_warning, "warning", true);
+            return;
+        }
         // alert(txt_comment.value);
 
         jQuery.ajax({

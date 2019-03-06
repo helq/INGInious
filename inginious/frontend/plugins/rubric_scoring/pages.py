@@ -171,7 +171,7 @@ class TaskListSubmissionPage(INGIniousAdminPage):
 
         return (
             self.template_helper.get_custom_renderer(_BASE_RENDERER_PATH).task_admin_rubric(
-                course,data, task, url)
+                course, data, task, url)
         )
 
 

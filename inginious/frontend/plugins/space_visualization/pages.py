@@ -4,11 +4,11 @@ import web
 import os
 import posixpath
 import urllib
-import numpy as np
+# import numpy as np
 from bson.objectid import ObjectId
 from inginious.frontend.pages.utils import INGIniousAuthPage, INGIniousPage
 from inginious.common.filesystems.local import LocalFSProvider
-import scipy as sp
+# import scipy as sp
 import sklearn.cluster as sklCluster
 import sklearn.manifold as sklManifold
 import numpy as np
@@ -144,7 +144,7 @@ class SpaceVisualizationPage(INGIniousAdminPage):
 
         nodes = {}
         for k in range(0, len(similitudes)):
-            nodes[k] = {"userID": k, "in": 0, "out": 0, "label":str(clusters[k])}
+            nodes[k] = {"userID": k, "in": 0, "out": 0, "label": str(clusters[k])}
 
         edges = {}
         treshold = 0.95
@@ -152,7 +152,7 @@ class SpaceVisualizationPage(INGIniousAdminPage):
         for k in range(len(similitudes[0])):
             for j in range(len(similitudes[0])):
                 if similitudes[k][j] >= treshold and k != j:
-                    edges[k * n_tam + j] = {"source":k,"target": j}
+                    edges[k * n_tam + j] = {"source": k, "target": j}
         print("here")
 
         return nodes, edges
@@ -168,10 +168,76 @@ class SpaceVisualizationPage(INGIniousAdminPage):
         course, task = self.get_course_and_check_rights(course_id, task_id)
         data = web.input()
 
+
+
+
         print("here")
         if "type" in data.keys() and data.type == "distance":
-            path_jar = '/media/windows/Visual/APDCmd.jar'
-            path_code = '/media/windows/Visual/AutomaticPlagiarismDetection/sourceCodes'
+            # path_jar = '/media/windows/Visual/APDCmd.jar'
+            # Funcion en la cual se descargan los codigos.
+            dataSubmission = list(self.database.submissions.aggregate(
+
+                [
+                    {
+                        "$match":
+                            {
+                                "courseid": course_id,
+                                "taskid": task_id,
+                                "username": {"$in": self.user_manager.get_course_registered_users(course, False)},
+
+                            }
+                    },
+                    {
+                        "$project": {
+
+                            "taskid": 1,
+                            "result": 1,
+                            "submitted_on": 1,
+                            "username": 1,
+                            "custom": 1
+
+                        }
+                    }
+
+                ]))
+
+            path_jar = '/home/uncode/Visual/APDCmd.jar'
+            path_code = '/home/uncode/Visual/sourceCodes'
+
+            # Eliminando todos lo archivos en el folder de codigos.
+            for the_file in os.listdir(path_code):
+                file_path = os.path.join(path_code, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception as e:
+                    print(e)
+
+            idx = 0
+            for entry in dataSubmission:
+                print(entry["_id"])
+                submission = self.submission_manager.get_submission(entry["_id"], user_check=False)
+                submission_input = self.submission_manager.get_input_from_submission(submission)
+
+                # print("Aca mostrando cosas")
+                #print(submission_input)
+                # print(submission_input['input'])
+                # print(submission_input['input']['sum'])
+                print(submission_input['input']['sum/language'])
+                data_input = submission_input
+
+                if (submission_input['input']['sum/language'].startswith("java")):
+                    fileName = '/{COURSE}.{SOURCE_CODE}.{USER}.{TASK_NAME}.java'.format(
+                        COURSE=data_input['courseid'], SOURCE_CODE=str(entry["_id"]), USER=data_input['username'][0], TASK_NAME=data_input['taskid']
+                    )
+                    #path_code + "/code" + str(entry["_id"]) + ".java"
+                    #print(path_code + fileName)
+                    f = open(path_code +fileName, "w")
+                    f.write(submission_input['input']['sum'])
+
+                    f.close()
+
+
             lang = 'java'
             distance = data["distance"]
             print (distance)
@@ -184,7 +250,8 @@ class SpaceVisualizationPage(INGIniousAdminPage):
             type_vis = data["visualization"]
 
             nodes, edges = self.do_visualization()
-            #print(labels)
+            #print(nodes)
+            #print(edges)
             temp = {"nodes": nodes, "edges": edges}
 
 
@@ -217,9 +284,10 @@ class SpaceVisualizationPage(INGIniousAdminPage):
         self.template_helper.add_javascript("https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js")
         self.template_helper.add_javascript("https://cdn.plot.ly/plotly-1.30.0.min.js")
         self.template_helper.add_javascript("https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js")
-        self.template_helper.add_css("/static/space_visualization/css/space_visualization.css")
-        self.template_helper.add_javascript("/static/space_visualization/js/d3.v3.min.js")
-        self.template_helper.add_css("/static/space_visualization/css/svg.css")
+        self.template_helper.add_javascript("https://d3js.org/d3.v5.min.js")
+        # self.template_helper.add_css("/space_visualization/static/css/space_visualization.css")
+        # self.template_helper.add_javascript("/space_visualization/static/js/d3.v3.min.js")
+        # self.template_helper.add_css("/space_visualization/static/css/svg.css")
 
 
         return self.page(course, task)
