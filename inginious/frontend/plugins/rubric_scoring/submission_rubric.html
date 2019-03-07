@@ -91,11 +91,11 @@ $var Navbar: $:NavbarF()
                         <h3>Comments</h3>
 
                         <textarea rows="4" cols="35" class="my-text-area" id="text_comment">$comment</textarea>
-                        <a href="#grade_edit_submit_status"
-                           class="btn btn-primary btn-block"
-                           type="button" onclick="comment_submit()">
-                            <i class="fa fa-save"></i> Comment
-                        </a>
+                        <!--<a href="#grade_edit_submit_status"-->
+                           <!--class="btn btn-primary btn-block"-->
+                           <!--type="button" onclick="comment_submit()">-->
+                            <!--<i class="fa fa-save"></i> Comment-->
+                        <!--</a>-->
                     </div>
                 </div>
                 <!--information div-->
@@ -245,6 +245,7 @@ $var Navbar: $:NavbarF()
         jQuery.ajax({
             success:  function(data) {
                 studio_display_task_submit_message_rubric(content_info, "info", true);
+                comment_submit();
             },
             method:   "POST",
 

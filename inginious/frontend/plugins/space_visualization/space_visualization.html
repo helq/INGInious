@@ -84,10 +84,10 @@ $var Navbar: $:NavbarF()
                     visualization1
                 </label>
             <br>
-             <label class="radio-btn-pad">
-                <input value="visualization2" name="visualization" type="radio">
-                visualization2
-            </label>
+             <!--<label class="radio-btn-pad">-->
+                <!--<input value="visualization2" name="visualization" type="radio">-->
+                <!--visualization2-->
+            <!--</label>-->
 
                 <a href="#visualice" class="btn btn-primary btn-block btn-padding" type="button" onclick="do_graph()"><i class="fa"></i> Visualice</a>
 
@@ -98,11 +98,17 @@ $var Navbar: $:NavbarF()
  <!--<script type="text/javascript" src="d3.v2.min.js"></script>-->
 <!--<script type ="text/javascript" src="/space_visualization/js/d3.v3.min.js"></script>-->
 <!--<script src="https://d3js.org/d3.v5.min.js"></script>-->
+<!--<script src="https://d3js.org/d3-dispatch.v1.min.js"></script>-->
+<!--<script src="https://d3js.org/d3-quadtree.v1.min.js"></script>-->
+<!--<script src="https://d3js.org/d3-timer.v1.min.js"></script>-->
+<!--<script src="https://d3js.org/d3-force.v2.min.js"></script>-->
 <script src="https://d3js.org/d3.v3.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>-->
 
+<!---->
 <script type ="text/javascript">
 
-   var w = 1280,
+   var w = 800,
     h = 600,
     fbBlue = d3.rgb("#3b5998"),
     fill = [fbBlue.brighter(2),fbBlue.brighter(),fbBlue,fbBlue.darker()];
@@ -341,6 +347,7 @@ var links = [	{source:27, target:28},
           nodes[d.source].out++;
           nodes[d.target].in++;
         });
+        console.info("ACa", links);
         /*nodes.forEach(function(d, i){
           if(d.out !== d.in)
             alert("DIFFERENT");
@@ -466,7 +473,7 @@ var links = [	{source:27, target:28},
 
 .visualization-plot {
     height: 500px;
-    width: 100%;
+    width: 500px;
 }
 </style>
 
