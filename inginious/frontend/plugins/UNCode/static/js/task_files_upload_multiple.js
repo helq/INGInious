@@ -14,7 +14,7 @@ jQuery(document).ready(function () {
             let listFilesDiv = $('#list_all_files');
             let listFiles = $.map(inputFiles, function (file) {
                 return file.name;
-            }).join();
+            }).join(", ");
 
             listFilesDiv.find('p[name=list_files]').text(listFiles);
             listFilesDiv.prop("hidden", false);
@@ -32,19 +32,18 @@ jQuery(document).ready(function () {
         $("form#upload_multiple_files_form").submit(function (e) {
             e.preventDefault();
             let error = false;
-            let resultData = "";
             let filesFailedUpload = [];
             let inputFiles = $("#upload_multiple_files_input").prop('files');
+            let completed = 0;
 
             $('#task_files_upload_multiple_modal').modal('hide');
-            $("#submit_multiple_files").prop("disabled", true);
+            $("#tab_file_list").html("Uploading files...");
             $.each(inputFiles, function (_, file) {
                 let form_data = new FormData();
                 form_data.append('action', 'upload');
                 form_data.append('path', file.name);
                 form_data.append('file', file);
                 $.ajax({
-                    async: false,
                     url: location.pathname + '/files',
                     type: 'post',
                     data: form_data,
@@ -56,23 +55,31 @@ jQuery(document).ready(function () {
                             error = true;
                             filesFailedUpload.push(file.name);
                         }
-                        resultData = data;
+
+                        completed++;
+                        if (completed === inputFiles.length) {
+                            callbackLastUploadedFile(error, data, filesFailedUpload);
+                        }
                     }
                 });
             });
-            $("#tab_file_list").replaceWith(resultData);
-            addTaskFilesUploadMultipleButton();
-            if (error) {
-                uploadErrorAlert(filesFailedUpload);
-            }
         });
+    }
+
+    function callbackLastUploadedFile(error, resultData, filesFailedUpload) {
+        $("#tab_file_list").replaceWith(resultData);
+        addTaskFilesUploadMultipleButton();
+        if (error) {
+            uploadErrorAlert(filesFailedUpload);
+        }
+        $("#upload_multiple_files_input").val('');
     }
 
     function uploadErrorAlert(filesFailedUpload) {
         let tabFileList = $('#tab_file_list');
         let filesAlert = tabFileList.find("div").filter("[role=alert]");
-        const message = "<p>There was an error while uploading the files: <strong>" + filesFailedUpload.join() +
-            "</strong>. They may be already uploaded.</p>";
+        const message = "<p>There was an error while uploading the files: <strong>" +
+            filesFailedUpload.sort().join(", ") + "</strong>. They may be already uploaded.</p>";
 
         if (filesAlert.length) {
             filesAlert.text('');
