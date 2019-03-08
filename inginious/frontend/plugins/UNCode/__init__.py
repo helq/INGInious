@@ -6,6 +6,7 @@ _static_folder_path = os.path.join(os.path.dirname(__file__), "static")
 _CONTEXT_TASK_TEMPLATE_FILE = "context_task_template.rst"
 _TASK_CONTEXT_HELP_MODAL_HTML_FILE = "task_context_help_modal.html"
 _TASK_FILES_UPLOAD_MULTIPLE_MODAL = "task_files_upload_multiple_modal.html"
+_TASK_RESULT_LEGEND_MODAL_HTML_FILE = "task_result_legend_modal.html"
 
 
 def init(plugin_manager, course_factory, client, config):
@@ -21,3 +22,5 @@ def init(plugin_manager, course_factory, client, config):
                             lambda: read_file(_static_folder_path, _TASK_CONTEXT_HELP_MODAL_HTML_FILE))
     plugin_manager.add_hook("additional_body_html",
                             lambda: read_file(_static_folder_path, _TASK_FILES_UPLOAD_MULTIPLE_MODAL))
+    plugin_manager.add_hook("additional_body_html",
+                            lambda: read_file(_static_folder_path, _TASK_RESULT_LEGEND_MODAL_HTML_FILE))
