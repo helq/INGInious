@@ -16,14 +16,20 @@ jQuery(document).ready(function () {
                 return file.name;
             }).join(", ");
 
-            listFilesDiv.find('p[name=list_files]').text(listFiles);
-            listFilesDiv.prop("hidden", false);
+            if(inputFiles.length){
+                listFilesDiv.find('p[name=list_files]').text(listFiles);
+                listFilesDiv.prop("hidden", false);
+            } else {
+                listFilesDiv.find('p[name=list_files]').text("");
+                listFilesDiv.prop("hidden", true);
+            }
         });
     }
 
     function closeModal() {
         // Function to describe the process to follow when the modal is closed.
         $('#task_files_upload_multiple_modal').on('hidden.bs.modal', function () {
+            $("#upload_multiple_files_input").val('');
             $("#list_all_files").prop("hidden", true);
         });
     }
@@ -34,35 +40,38 @@ jQuery(document).ready(function () {
             let error = false;
             let filesFailedUpload = [];
             let inputFiles = $("#upload_multiple_files_input").prop('files');
+            inputFiles = $.extend({}, inputFiles);
             let completed = 0;
 
             $('#task_files_upload_multiple_modal').modal('hide');
-            $("#tab_file_list").html("Uploading files...");
-            $.each(inputFiles, function (_, file) {
-                let form_data = new FormData();
-                form_data.append('action', 'upload');
-                form_data.append('path', file.name);
-                form_data.append('file', file);
-                $.ajax({
-                    url: location.pathname + '/files',
-                    type: 'post',
-                    data: form_data,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-                    success: function (data) {
-                        if (data.search(/alert/i) > 0) {
-                            error = true;
-                            filesFailedUpload.push(file.name);
-                        }
+            if(inputFiles.length){
+                $("#tab_file_list").html("Uploading files...");
+                $.each(inputFiles, function (_, file) {
+                    let form_data = new FormData();
+                    form_data.append('action', 'upload');
+                    form_data.append('path', file.name);
+                    form_data.append('file', file);
+                    $.ajax({
+                        url: location.pathname + '/files',
+                        type: 'post',
+                        data: form_data,
+                        contentType: false,
+                        cache: false,
+                        processData: false,
+                        success: function (data) {
+                            if (data.search(/alert/i) > 0) {
+                                error = true;
+                                filesFailedUpload.push(file.name);
+                            }
 
-                        completed++;
-                        if (completed === inputFiles.length) {
-                            callbackLastUploadedFile(error, data, filesFailedUpload);
+                            completed++;
+                            if (completed === inputFiles.length) {
+                                callbackLastUploadedFile(error, data, filesFailedUpload);
+                            }
                         }
-                    }
+                    });
                 });
-            });
+            }
         });
     }
 
@@ -72,7 +81,6 @@ jQuery(document).ready(function () {
         if (error) {
             uploadErrorAlert(filesFailedUpload);
         }
-        $("#upload_multiple_files_input").val('');
     }
 
     function uploadErrorAlert(filesFailedUpload) {
