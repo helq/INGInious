@@ -45,7 +45,7 @@ jQuery(document).ready(function () {
             let filesFailedUpload = [];
             let inputFiles = $("#upload_multiple_files_input").prop('files');
             inputFiles = $.extend({}, inputFiles);
-            let completed = 0;
+            let requestsCompleted = 0;
 
             $('#task_files_upload_multiple_modal').modal('hide');
             if (inputFiles.length) {
@@ -68,8 +68,8 @@ jQuery(document).ready(function () {
                                 filesFailedUpload.push(file.name);
                             }
 
-                            completed++;
-                            if (completed === inputFiles.length) {
+                            requestsCompleted++;
+                            if (requestsCompleted === inputFiles.length) {
                                 callbackLastUploadedFile(error, data, filesFailedUpload);
                             }
                         }
