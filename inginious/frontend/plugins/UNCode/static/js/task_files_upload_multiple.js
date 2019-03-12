@@ -30,7 +30,7 @@ jQuery(document).ready(function () {
         });
     }
 
-    function closeModal() {
+    function closeModalAction() {
         // Function to describe the process to follow when the modal is closed.
         $('#task_files_upload_multiple_modal').on('hidden.bs.modal', function () {
             $("#upload_multiple_files_input").val('');
@@ -81,7 +81,6 @@ jQuery(document).ready(function () {
 
     function callbackLastUploadedFile(error, resultData, filesFailedUpload) {
         $("#tab_file_list").replaceWith(resultData);
-        addTaskFilesUploadMultipleButton();
         if (error) {
             uploadErrorAlert(filesFailedUpload);
         }
@@ -105,6 +104,6 @@ jQuery(document).ready(function () {
     addTaskFilesUploadMultipleButton();
     uploadMultipleFilesOnChange();
     taskFilesUploadMultiple();
-    closeModal();
+    closeModalAction();
 
 });
