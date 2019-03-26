@@ -7,7 +7,9 @@ def available_languages():
         "cpp": "C++",
         "cpp11": "C++11",
         "c": "C",
-        "c11": "C11"
+        "c11": "C11",
+        "verilog" : "Verilog",
+        "vhdl": "VHDL"
     }
 
     return _available_languages

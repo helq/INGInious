@@ -28,7 +28,9 @@ class DisplayableCodeMultipleLanguagesProblem(CodeMultipleLanguagesProblem, Disp
         "cpp": "C++",
         "cpp11": "C++11",
         "c": "C",
-        "c11": "C11"}
+        "c11": "C11",
+        "verilog" : "Verilog",
+        "vhdl": "VHDL"}
 
     @classmethod
     def get_renderer(cls, template_helper):

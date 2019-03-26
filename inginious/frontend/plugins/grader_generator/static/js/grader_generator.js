@@ -123,9 +123,13 @@ function studio_update_grader_files()
     }, function(files) {
         let inputFileSelect = $("#grader_test_case_in");
         let outputFileSelect = $("#grader_test_case_out");
+        let testbechFileSelect = $("#testbench_file_name");
+        let hdlOutputFileSelect = $("#hdl_expected_output");
 
         inputFileSelect.empty();
         outputFileSelect.empty();
+        testbechFileSelect.empty();
+        hdlOutputFileSelect.empty();
 
         $.each(files, function(index, file) {
           if (file.is_directory) {
@@ -139,7 +143,26 @@ function studio_update_grader_files()
 
           inputFileSelect.append(entry);
           outputFileSelect.append(entry.clone());
+          testbechFileSelect.append(entry.clone());
+          hdlOutputFileSelect.append(entry.clone());
         });
     }, "json");
 
+}
+
+
+function studio_update_container_name()
+{
+  // Check container (environment) name, and hide all test containers
+  let container_name = $("#environment").val();
+  let test_containers = $(".grader_form");
+  for(let cont = 0; cont < test_containers.length; cont++){
+    test_containers[cont].style.display = "none";
+  }
+  if(container_name === "HDL"){
+    try { $("#hdl_grader_form")[0].style.display = "block"; } catch {};
+  }
+  if(container_name === "multiple_languages"){
+    try{ $("#multilang_grader_form")[0].style.display = "block"; } catch {};
+  }
 }

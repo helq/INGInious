@@ -1,46 +1,15 @@
 import json
 import tempfile
 import os
-from .graderforms import MultilangForm, InvalidGraderError
+from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
+from collections import OrderedDict
+import re
+from .graderforms import MultilangForm, HDLForm, InvalidGraderError
 
 _PLUGIN_PATH = os.path.dirname(__file__)
 _BASE_RENDERER_PATH = _PLUGIN_PATH
-_RUN_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.txt')
-
-
-
-def generate_grader(form):
-    """ This method generates a grader through the form data """
-
-    grader_test_cases = form.task_data["grader_test_cases"]
-    problem_id = form.task_data["grader_problem_id"]
-    test_cases = [(test_case["input_file"], test_case["output_file"])
-                  for test_case in grader_test_cases]
-    weights = [test_case["weight"] for test_case in grader_test_cases]
-    options = {
-        "compute_diff": form.task_data["grader_compute_diffs"],
-        "treat_non_zero_as_runtime_error": form.task_data["treat_non_zero_as_runtime_error"],
-        "diff_max_lines": form.task_data["grader_diff_max_lines"],
-        "diff_context_lines": form.task_data["grader_diff_context_lines"],
-        "output_diff_for": [test_case["input_file"] for test_case in grader_test_cases
-                            if test_case["diff_shown"]]
-    }
-
-    with open(_RUN_FILE_TEMPLATE_PATH, "r") as template, tempfile.TemporaryDirectory() as temporary:
-        run_file_template = template.read()
-
-        run_file_name = 'run'
-        target_run_file = os.path.join(temporary, run_file_name)
-
-        with open(target_run_file, "w") as f:
-            f.write(run_file_template.format(
-                problem_id=repr(problem_id), test_cases=repr(test_cases),
-                options=repr(options), weights=repr(weights)))
-        
-        form.task_fs.copy_to(temporary)
-
-
-
+_MULTILANG_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.txt')
+_HDL_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'hdl_file_template.txt')
 
 
 def on_task_editor_submit(course, taskid, task_data, task_fs):
@@ -51,18 +20,23 @@ def on_task_editor_submit(course, taskid, task_data, task_fs):
     task_data["generate_grader"] = "generate_grader" in task_data
 
     if task_data['generate_grader']:
-        form = MultilangForm(task_data, task_fs)
+        if task_data['environment'] == 'multiple_languages':
+            form = MultilangForm(task_data, task_fs)
+        elif task_data['environment'] == 'HDL':
+            form = HDLForm(task_data, task_fs)
+        else:
+            return
         
         # Try to parse and validate all the information
         try:
             form.parse()
             form.validate()
-        except InvalidGraderError as e:
-            return json.dumps({'status': 'error', 'message': e.message})
-
+        except InvalidGraderError as error:
+            return json.dumps({'status': 'error', 'message': error.message})
+                 
         # Generate the grader
         if form.task_data['generate_grader']:
-            generate_grader(form)
+            form.generate_grader()
 
 
 def grader_generator_tab(course, taskid, task_data, template_helper):
