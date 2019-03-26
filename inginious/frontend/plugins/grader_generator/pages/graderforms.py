@@ -69,7 +69,7 @@ class GraderForm:
 
 class MultilangForm(GraderForm):
     def tests_to_dict(self):
-        """ This method organize the tests information to a dictionary """
+        """ This method parses the tests cases information in a dictionary """
 
         # Transform grader_test_cases[] entries into an actual array (they are sent as separate keys).
         grader_test_cases = CourseEditTask.dict_from_prefix("grader_test_cases", self.task_data) or OrderedDict()
@@ -82,7 +82,7 @@ class MultilangForm(GraderForm):
         return grader_test_cases
 
     def parse_and_validate_test_cases(self):
-        """ This method parse all the test cases """
+        """ This method parses all the test cases. """
         test_cases = []
         for _, test_case in self.tests_to_dict().items():
             # Parsing
