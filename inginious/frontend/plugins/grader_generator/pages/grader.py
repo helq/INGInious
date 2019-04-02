@@ -1,20 +1,16 @@
 import json
-import tempfile
 import os
-from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
-from collections import OrderedDict
-import re
 from .graderforms import MultilangForm, HDLForm, InvalidGraderError
 
-_PLUGIN_PATH = os.path.dirname(__file__)
-_BASE_RENDERER_PATH = _PLUGIN_PATH
-_MULTILANG_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.txt')
-_HDL_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'hdl_file_template.txt')
-
+_BASE_RENDERER_PATH = os.path.dirname(__file__)
 
 def on_task_editor_submit(course, taskid, task_data, task_fs):
     """ This method use the form from the plugin to generate
-    the grader (code to use the utilities from the containers i.e multilang) """
+    the grader (code to use the utilities from the containers i.e multilang) and validate
+    the entries in the form.
+
+    Returns: None if successful otherwise a str
+    """
 
     # Create form object
     task_data["generate_grader"] = "generate_grader" in task_data
