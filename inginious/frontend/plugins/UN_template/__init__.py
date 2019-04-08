@@ -21,7 +21,7 @@ def init(plugin_manager, course_factory, client, config):
     plugin_manager.add_hook("css", lambda: "/UN_template/static/css/tablet.css")
     plugin_manager.add_hook("css", lambda: "/UN_template/static/css/phone.css")
     plugin_manager.add_hook("css", lambda: "/UN_template/static/css/small.css")
-    plugin_manager.add_hook("css", lambda: "/UN_template/static/css/small.css")
+    plugin_manager.add_hook("css", lambda: "/UN_template/static/css/printer.css")
     plugin_manager.add_hook("css", lambda: "/UN_template/static/css/new_unal.css")
     plugin_manager.add_hook("css", lambda: "/UN_template/static/icons/elusive/css/elusive-icons.min.css")
     plugin_manager.add_hook('body_header', header)
