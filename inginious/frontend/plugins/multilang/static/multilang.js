@@ -54,7 +54,9 @@ function convertInginiousLanguageToCodemirror(inginiousLanguage) {
         "c11": "c",
         "python2": "python",
         "python3": "python",
-        "ruby": "ruby"
+        "ruby": "ruby",
+        "vhdl" : "vhdl",
+        "verilog" : "verilog"
     };
 
     return languages[inginiousLanguage];
