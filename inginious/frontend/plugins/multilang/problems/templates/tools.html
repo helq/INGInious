@@ -3,7 +3,8 @@ $def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
 <br>
 <br>
 <div>
-  <button type="button" class="btn btn-success" id="btn-lint" onclick="onClickLintButton()">Perform lint</button>
+    $if type == "code_multiple_languages":
+        <button type="button" class="btn btn-success" id="btn-lint" onclick="onClickLintButton()">Perform lint</button>
   &nbsp;<button type="button" class="btn btn-primary" onclick="toggleElement('tools-$inputId')">Tools</button>
   <div id="tools-$inputId" style="display: none">
     <div class="row panel-body">
@@ -74,8 +75,11 @@ $def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
     }
     
     function onClickLintButton() {
-        let cm = document.querySelector(".CodeMirror").CodeMirror;
-        cm.performLint();
+        let cm = document.querySelector(".CodeMirror");
+        if(cm !== null){
+            cm = cm.CodeMirror;
+            cm.performLint();
+        }
     }
 
 </script>
