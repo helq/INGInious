@@ -198,7 +198,7 @@
       var state = cm.state.lint;
       if (!state) return;
       clearTimeout(state.timeout);
-      state.timeout = setTimeout(function () { startLinting(cm); }, state.options.delay || 500);
+      state.timeout = setTimeout(function () { startLinting(cm); }, state.options.delay || 2000);
     }
   
     function popupTooltips(annotations, e) {

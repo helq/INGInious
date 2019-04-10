@@ -3,7 +3,8 @@ $def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
 <br>
 <br>
 <div>
-  <button type="button" class="btn btn-primary" onclick="toggleElement('tools-$inputId')">Tools</button>
+  <button type="button" class="btn btn-success" id="btn-lint" onclick="onClickLintButton()">Perform lint</button>
+  &nbsp;<button type="button" class="btn btn-primary" onclick="toggleElement('tools-$inputId')">Tools</button>
   <div id="tools-$inputId" style="display: none">
     <div class="row panel-body">
       <div class="col-md-6 pr-1">
@@ -55,20 +56,26 @@ $def with (inputId, language, customInputId, type, pythonTutorURL, linterURL)
   </div>
 </div>
 <script>
-  function getDefaultVisualServerURL(){
-      return "$pythonTutorURL";
-  }
+    function getDefaultVisualServerURL() {
+        return "$pythonTutorURL";
+    }
 
-  function getLinterServerURL(){
-      return "$linterURL";
-  }
+    function getLinterServerURL() {
+        return "$linterURL";
+    }
 
-  function toggleElement (id) {
-      var element = document.getElementById(id);
-      if (element.style.display === 'none') {
-          element.style.display = 'block';
-      } else {
-          element.style.display = 'none';
-      }
-  }
+    function toggleElement(id) {
+        var element = document.getElementById(id);
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+    
+    function onClickLintButton() {
+        let cm = document.querySelector(".CodeMirror").CodeMirror;
+        cm.performLint();
+    }
+
 </script>
