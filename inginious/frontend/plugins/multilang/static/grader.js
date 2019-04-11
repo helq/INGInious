@@ -3,6 +3,16 @@ function updateDiffBlock(blockId) {
     block.html(parseOutputDiff(block.html()));
 }
 
+function createDownloadLink(filename, text){
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+    var element = '<a class="btn-link" target="_blank" rel="noopener noreferrer" href="data:text/plain;charset=utf-8,' + encodeURIComponent(text) + '" ' + 'download=' + filename + '>Download</a>';
+    
+    
+    document.getElementById(filename + '_download_link').innerHTML = element + "<br/><br/>";
+}
+
 function parseOutputDiff(diff) {
     let result = [];
     let lines = diff.split('\\n');
