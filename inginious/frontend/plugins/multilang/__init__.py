@@ -3,7 +3,7 @@ import os
 from inginious.frontend.plugins.utils import create_static_resource_page
 from inginious.frontend.plugins.multilang.problems.code_multiple_languages_problem import DisplayableCodeMultipleLanguagesProblem
 from inginious.frontend.plugins.multilang.problems.code_multiple_file_languages_problem import DisplayableCodeFileMultipleLanguagesProblem
-from inginious.frontend.plugins.multilang.problems.constants import set_linter_url, set_python_tutor_url
+from inginious.frontend.plugins.multilang.problems.constants import set_linter_url, set_python_tutor_url, set_show_tools
 
 _static_folder_path = os.path.join(os.path.dirname(__file__), "static")
 
@@ -18,6 +18,11 @@ def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_hook("css", lambda: "/multilang/static/lint.css")
     course_factory.get_task_factory().add_problem_type(DisplayableCodeMultipleLanguagesProblem)
     course_factory.get_task_factory().add_problem_type(DisplayableCodeFileMultipleLanguagesProblem)
+
+    # This option is to hide/show tools like Python tutor.
+    show_tools = plugin_config.get("show_tools", True)
+    if show_tools != "":
+        set_show_tools(show_tools)
 
     python_tutor_url = plugin_config.get("python_tutor_url", "")
     if python_tutor_url != "":

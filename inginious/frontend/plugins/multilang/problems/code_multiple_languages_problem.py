@@ -2,7 +2,7 @@ import os
 
 from inginious.common.tasks_problems import CodeProblem
 from inginious.frontend.task_problems import DisplayableCodeProblem
-from .constants import get_linter_url, get_python_tutor_url
+from .constants import get_linter_url, get_python_tutor_url, get_show_tools
 
 path_to_plugin = os.path.abspath(os.path.dirname(__file__))
 
@@ -55,6 +55,10 @@ class DisplayableCodeMultipleLanguagesProblem(CodeMultipleLanguagesProblem, Disp
 
         multiple_language_render = str(renderer.multilang(self.get_id(), dropdown_id, allowed_languages, self.get_id(), self.get_type()))
         standard_code_problem_render = super(DisplayableCodeMultipleLanguagesProblem, self).show_input(template_helper, language, seed)
-        tools_render = str(renderer.tools(self.get_id(), "plain", custom_input_id, self.get_type(), get_python_tutor_url(), get_linter_url()))
+        tools_render = ""
+        if get_show_tools():
+            tools_render = str(
+                renderer.tools(self.get_id(), "plain", custom_input_id, self.get_type(), get_python_tutor_url(),
+                               get_linter_url()))
 
         return multiple_language_render + standard_code_problem_render + tools_render
