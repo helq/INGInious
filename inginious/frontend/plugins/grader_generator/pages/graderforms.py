@@ -1,11 +1,8 @@
 import os
-import json
-from collections import OrderedDict
-from abc import ABC, abstractmethod
-from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
 import tempfile
+from collections import OrderedDict
+from inginious.frontend.pages.course_admin.task_edit import CourseEditTask
 
-# TODO: Replace this class and all json dumps to main class only one time
 
 _PLUGIN_PATH = os.path.dirname(__file__)
 _BASE_RENDERER_PATH = _PLUGIN_PATH
@@ -13,14 +10,17 @@ _MULTILANG_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'run_file_template.tx
 _HDL_FILE_TEMPLATE_PATH = os.path.join(_PLUGIN_PATH, 'hdl_file_template.txt')
 
 class InvalidGraderError(Exception):
+    """
+    This class represents any error present on
+    the form for the generation of the grader (check edit_task->tab grader)
+    """
     def __init__(self, message, *args):
         super().__init__(message, *args)
-
         self.message = message
 
-
 class GraderForm:
-    """ This class manage the form for the creation of the grader """
+    """ This class parse and validates fields in the grader form, common
+    in all the forms (i.e multilang, HDL) """
 
     def __init__(self, task_data, task_fs):
         self.task_data = dict(task_data)
@@ -39,7 +39,7 @@ class GraderForm:
         except (ValueError, TypeError):
             raise InvalidGraderError("'Diff context lines' must be an integer")
 
-        # Parse checkboxes 
+        # Parse checkboxes
         self.task_data["grader_compute_diffs"] = "grader_compute_diffs" in self.task_data
         self.task_data["treat_non_zero_as_runtime_error"] = "treat_non_zero_as_runtime_error" in self.task_data
 
@@ -57,7 +57,7 @@ class GraderForm:
         problem_type = self.task_data["problems"][self.task_data["grader_problem_id"]]["type"]
 
         if problem_type not in ['code_multiple_languages', 'code_file_multiple_languages']:
-            raise InvalidGraderError("Grader: only Code Multiple Language and Code File Multiple Language problems are supported")
+            raise InvalidGraderError("Grader: only 'Code Multiple Language' and 'Code File Multiple Language' problems are supported")
 
         # Check values that must be positive
         if self.task_data["grader_diff_max_lines"] <= 0:
@@ -66,8 +66,10 @@ class GraderForm:
         if self.task_data["grader_diff_context_lines"] <= 0:
             raise InvalidGraderError("'Diff context lines' must be positive")
 
-
 class MultilangForm(GraderForm):
+    """
+    This class manage the fields only present on the multilang form.
+    """
     def tests_to_dict(self):
         """ This method parses the tests cases information in a dictionary """
 
@@ -108,7 +110,7 @@ class MultilangForm(GraderForm):
 
             test_cases.append(test_case)
 
-        if len(test_cases) == 0:
+        if not test_cases:
             raise InvalidGraderError("You must provide test cases to autogenerate the grader")
 
         input_files_are_unique = (len(set(test_case["input_file"] for test_case in test_cases)) ==
@@ -120,9 +122,6 @@ class MultilangForm(GraderForm):
         return test_cases
 
     def parse(self):
-        """
-        This function parse the data from task_data i.e (test_cases)
-        """
         super(MultilangForm, self).parse()
         # Parse test cases
         self.task_data['grader_test_cases'] = self.parse_and_validate_test_cases()
@@ -157,6 +156,9 @@ class MultilangForm(GraderForm):
             self.task_fs.copy_to(temporary)
 
 class HDLForm(GraderForm):
+    """
+    This class manages the fields only present on the HDL form
+    """
     def parse(self):
         super(HDLForm, self).parse()
 
@@ -167,7 +169,6 @@ class HDLForm(GraderForm):
             raise InvalidGraderError("No expected output was selected for testing")
         
     def generate_grader(self):
-        
         problem_id = self.task_data["grader_problem_id"]
         testbench_file_name = self.task_data["testbench_file_name"]
         hdl_expected_output = self.task_data["hdl_expected_output"]
