@@ -67,7 +67,7 @@ class Task extends React.Component {
                             <h5>Context</h5>
                           </Col>
                           <Col md={11}>
-                              <Well bsSize="small">{this.props.task_info.task_context}</Well>
+                              <Well bsSize="small" dangerouslySetInnerHTML={{ __html: this.props.task_info.task_context }}></Well>
                           </Col>
                         </Row>
 

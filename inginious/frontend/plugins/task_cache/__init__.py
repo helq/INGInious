@@ -7,10 +7,11 @@ _logger = logging.getLogger("inginious.frontend.webapp.plugins.hooks_example")
 def init(plugin_manager, course_factory, client, config):
 
     def on_task_updated(courseid, taskid, new_content):
+        user_language = plugin_manager.get_user_manager().session_language()
         task_name = new_content["name"]
         descriptor = course_factory.get_course(courseid)._task_factory.get_task_descriptor_content(courseid, taskid)
         task_author = descriptor["author"]
-        task_context = descriptor["context"]
+        task_context = str(course_factory.get_course(courseid).get_task(taskid).get_context(user_language))
         tags = new_content.get("tags", [])
         course = course_factory.get_course(courseid)
         task_data = {
@@ -19,7 +20,7 @@ def init(plugin_manager, course_factory, client, config):
             "task_author": task_author,
             "task_context": task_context,
             "course_id": courseid,
-            "course_name": course.get_name(plugin_manager.get_user_manager().session_language()),
+            "course_name": course.get_name(user_language),
             "tags": [tag["name"] for _, tag in tags.items()]
         }
 
