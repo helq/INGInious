@@ -100,3 +100,7 @@ function load_input_code_file_multiple_languages(submissionid, key, input){
 function selectAllLanguages(){
     $(".checkbox_language").prop("checked", true);
 }
+
+function unselectAllLanguages(){
+    $(".checkbox_language").prop("checked", false);
+}
