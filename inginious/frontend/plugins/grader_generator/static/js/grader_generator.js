@@ -153,7 +153,6 @@ function studio_update_grader_files()
 
 function studio_update_container_name()
 {
-  // This function hides the forms which container is not been used
   // Check container (environment) name, and hide all test containers
   let container_name = $("#environment").val();
   let test_containers = $(".grader_form");
@@ -166,13 +165,5 @@ function studio_update_container_name()
   if(container_name === "multiple_languages"){
     try{ $("#multilang_grader_form")[0].style.display = "block"; } catch {};
   }
-}
-
-// Match test cases
-
-function read_files_and_match(){
-  // This function reads all the files on the tab "Task files" and 
-  // matches to test cases
-  
 }
 
