@@ -1,13 +1,18 @@
 from inginious.frontend.pages.utils import INGIniousAuthPage
-from .constants import base_renderer_path
+from .constants import base_renderer_path, get_user_minified
 
 class UserStatisticsPage(INGIniousAuthPage):
     def GET_AUTH(self, course_id):
         self.template_helper.add_javascript("https://cdnjs.cloudflare.com/ajax/libs/PapaParse/4.3.6/papaparse.min.js")
         self.template_helper.add_javascript("https://cdn.plot.ly/plotly-1.30.0.min.js")
-        self.template_helper.add_javascript("/statistics/static/js/statistics.js")
-        self.template_helper.add_javascript("/statistics/static/js/user_statistics.js")
-        self.template_helper.add_css("/statistics/static/css/statistics.css")
+        if get_user_minified():
+            self.template_helper.add_javascript("/statistics/static/js/statistics.min.js")
+            self.template_helper.add_javascript("/statistics/static/js/user_statistics.min.js")
+            self.template_helper.add_css("/statistics/static/css/statistics.min.css")
+        else:
+            self.template_helper.add_javascript("/statistics/static/js/statistics.js")
+            self.template_helper.add_javascript("/statistics/static/js/user_statistics.js")
+            self.template_helper.add_css("/statistics/static/css/statistics.css")
 
         return (
             self.template_helper
