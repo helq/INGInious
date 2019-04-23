@@ -59,4 +59,4 @@ def init(plugin_manager, course_factory, client, plugin_config):
     if use_minified:
         plugin_manager.add_hook("javascript_footer", lambda: "/custom_input/static/custom_input.min.js")
     else:
-        plugin_manager.add_hook("javascript_header", lambda: "/custom_input/static/custom_input.js")
+        plugin_manager.add_hook("javascript_footer", lambda: "/custom_input/static/custom_input.js")
