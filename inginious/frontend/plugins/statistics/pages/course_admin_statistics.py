@@ -9,7 +9,6 @@ class CourseAdminStatisticsPage(INGIniousAdminPage):
         self.template_helper.add_javascript("https://cdn.plot.ly/plotly-1.30.0.min.js")
         self.template_helper.add_javascript("https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js")
         if get_user_minified():
-            self.template_helper.add_javascript("/statistics/static/js/statistics.min.js")
             self.template_helper.add_javascript("/statistics/static/js/course_admin_statistics.min.js")
             self.template_helper.add_css("/statistics/static/css/statistics.min.css")
         else:
