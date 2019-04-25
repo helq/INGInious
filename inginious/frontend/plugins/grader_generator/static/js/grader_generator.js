@@ -173,6 +173,45 @@ function studio_update_container_name()
 function read_files_and_match(){
   // This function reads all the files on the tab "Task files" and 
   // matches to test cases
-  
+  $.get('/api/grader_generator/test_file_api', {
+    course_id: courseId,
+    task_id: taskId
+}, function(files) {
+    // Pass the file info to JSON for comparison
+    var json_files = [];
+    for(var ind = 0; ind < files.length; ind++)
+      json_files.push(JSON.stringify(files[ind]));
+
+    // Check the current test cases for no repetitions
+    var test_cases = []
+    for(ind = 0; ind < grader_test_cases_count; ind++)
+      test_cases.push($("#grader_test_cases_"+ ind + "_input_file").val());
+
+    $.each(files, function(index, file) {
+      if (file.is_directory || test_cases.includes(file.complete_name)) {
+        return;
+      }
+      var entry = {};
+      var parts = file.name.split('.');
+      var complete_parts = file.complete_name.split('.')
+      if (parts[parts.length - 1] === 'in'){
+        name_without_extension = parts.splice(0, parts.length - 1).join(".");
+        var file_obj = {
+          "level" : file.level,
+          "is_directory" : false,
+          "name" : name_without_extension + '.out',
+          "complete_name" : complete_parts.splice(0, complete_parts.length - 1).join(".") + '.out'
+        }
+        if (json_files.includes(JSON.stringify(file_obj))){
+          entry = {
+            'input_file': file.complete_name,
+            'output_file': file_obj.complete_name
+          }
+          studio_add_test_case(entry);
+        }
+        
+      }
+    });
+}, "json");
 }
 
