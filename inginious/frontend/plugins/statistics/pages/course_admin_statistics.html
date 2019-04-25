@@ -35,22 +35,28 @@ $var Navbar: $:NavbarF()
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active" id="gradeCount">
             <h4>Submissions by grade</h4>
+            <br/>
+            <button type="button" class="btn btn-info" onclick="gradeCountStatistic.downloadCsvAsync()"><i class="fa fa-table"></i> Download CSV</button>
             <div id="statisticsGradeDiv" class="statistics-grade"></div>
-            <button type="button" class="btn btn-link" onclick="gradeCountStatistic.downloadCsvAsync()">Download CSV</button>
+            
 
             <table class="table table-hover" id="statisticsGradeTable"></table>
         </div>
         <div role="tabpanel" class="tab-pane" id="gradeDistribution">
             <h4>Final grade distribution</h4>
+            <br/>
+            <button type="button" class="btn btn-info" onclick="gradeDistributionStatistic.downloadCsvAsync()"><i class="fa fa-table"></i> Download CSV</button>
             <div id="statisticsGradeDistributionDiv" class="statistics-grade"></div>
-            <button type="button" class="btn btn-link" onclick="gradeDistributionStatistic.downloadCsvAsync()">Download CSV</button>
+            
 
             <table class="table table-hover" id="statisticsGradeDistributionTable"></table>
         </div>
         <div role="tabpanel" class="tab-pane" id="submissionsVerdict">
             <h4>Submissions Verdict (ALL)</h4>
+            <br/>
+            <button type="button" class="btn btn-info" onclick="submissionsVerdictStatistic.downloadCsvAsync()"><i class="fa fa-table"></i> Download CSV</button>
             <div id="submissionsVerdictDiv" class="statistics-grade"></div>
-            <button type="button" class="btn btn-link" onclick="submissionsVerdictStatistic.downloadCsvAsync()">Download CSV</button>
+            
             <button class="button-normalize"
                     onclick="tabToStatistic.submissionsVerdict.toggleNormalize()">
                     Toggle normalize
@@ -59,8 +65,10 @@ $var Navbar: $:NavbarF()
         </div>
         <div role="tabpanel" class="tab-pane" id="bestSubmissionsVerdict">
             <h4>Submissions Verdict (BEST)</h4>
+            <br/>
+            <button type="button" class="btn btn-info" onclick="bestSubmissionsVerdictStatistic.downloadCsvAsync()"><i class="fa fa-table"></i> Download CSV</button>
             <div id="bestSubmissionsVerdictDiv" class="statistics-grade"></div>
-            <button type="button" class="btn btn-link" onclick="bestSubmissionsVerdictStatistic.downloadCsvAsync()">Download CSV</button>
+            
             <button class="button-normalize"
                     onclick="tabToStatistic.bestSubmissionsVerdict.toggleNormalize()">
                     Toggle normalize
