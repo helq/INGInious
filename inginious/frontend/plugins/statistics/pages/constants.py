@@ -10,5 +10,5 @@ def set_use_minified(value):
     _use_minfied = value
 
 
-def get_user_minified():
+def get_use_minified():
     return _use_minfied
