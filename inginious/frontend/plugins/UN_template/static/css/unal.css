@@ -460,7 +460,8 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   padding: 0;
 }
 #unalTop .navigation .buscador .gsc-control-searchbox-only .gsc-input input {
-  background: none;
+  background: none !important;
+  text-indent: 0 !important;
   color: white;
   display: inline;
   font-size: 1.2em;
@@ -497,7 +498,20 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   height: 30px;
   padding: 0;
   width: 30px;
+  margin-left: 0 !important;
 }
+
+#unalTop .navigation .buscador .gsc-search-button button.gsc-search-button-v2 svg {
+    width: 16px !important;
+    height: 16px !important;
+    margin: 7px !important;
+}
+
+table.gsc-completion-container {
+    font-family: 'Ancizar sans' !important;
+    font-weight: normal !important;
+}
+
 #unalTop .navigation .buscador .gsc-search-button input.gsc-search-button {
   border: none;
   -webkit-box-shadow: none;
