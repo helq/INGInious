@@ -2,6 +2,8 @@ import json
 import os
 from .graderforms import MultilangForm, HDLForm, InvalidGraderError
 
+from .constants import get_use_minified
+
 _BASE_RENDERER_PATH = os.path.dirname(__file__)
 
 def on_task_editor_submit(course, taskid, task_data, task_fs):
@@ -43,7 +45,11 @@ def grader_generator_tab(course, taskid, task_data, template_helper):
     content = template_helper.get_custom_renderer(_BASE_RENDERER_PATH, layout=False).grader(task_data,
                                                                                             grader_test_cases_dump,
                                                                                             course, taskid)
-    template_helper.add_javascript('/grader_generator/static/js/grader_generator.js')
+    if get_use_minified():
+        template_helper.add_javascript('/grader_generator/static/js/grader_generator.min.js')
+    else:
+        template_helper.add_javascript('/grader_generator/static/js/grader_generator.js')
+
 
     return tab_id, link, content
 

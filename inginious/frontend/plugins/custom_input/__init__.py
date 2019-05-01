@@ -54,4 +54,9 @@ def customInputManagerWithCurriedClient(client):
 def init(plugin_manager, course_factory, client, plugin_config):
     plugin_manager.add_page(r'/custom_input/static/(.*)', create_static_resource_page(_static_folder_path))
     plugin_manager.add_page("/api/custom_input/", customInputManagerWithCurriedClient(client))
-    plugin_manager.add_hook("javascript_header", lambda: "/custom_input/static/custom_input.js")
+
+    use_minified = plugin_config.get("use_minified", True)
+    if use_minified:
+        plugin_manager.add_hook("javascript_footer", lambda: "/custom_input/static/custom_input.min.js")
+    else:
+        plugin_manager.add_hook("javascript_footer", lambda: "/custom_input/static/custom_input.js")

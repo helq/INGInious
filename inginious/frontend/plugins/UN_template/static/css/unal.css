@@ -177,7 +177,7 @@ ul, ol {
 
 #services .indicator {
   background-color: #94b43b;
-  background-image: url(../images/backServices.png);
+  background-image: url(/UN_template/static/images/backServices.png);
   background-position: 0 0;
   cursor: pointer;
   height: 126px;
@@ -223,7 +223,7 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   -moz-transition: width 0.5s;
   -o-transition: width 0.5s;
   transition: width 0.5s;
-  background: no-repeat url(../images/sealBck.png);
+  background: no-repeat url(/UN_template/static/images/sealBck.png);
   float: left;
   height: 135px;
   width: 234px;
@@ -367,7 +367,7 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   width: 20px;
 }
 #unalTop .firstMenu ul.socialLinks li a.twitter, #unalTop .firstMenu ul.socialLinks li a.twitter:hover, #unalTop .firstMenu ul.socialLinks li a.facebook, #unalTop .firstMenu ul.socialLinks li a.facebook:hover, #unalTop .firstMenu ul.socialLinks li a.youtube, #unalTop .firstMenu ul.socialLinks li a.youtube:hover, #unalTop .firstMenu ul.socialLinks li a.flickr, #unalTop .firstMenu ul.socialLinks li a.flickr:hover, #unalTop .firstMenu ul.socialLinks li a.rss, #unalTop .firstMenu ul.socialLinks li a.rss:hover, #unalTop .firstMenu ul.socialLinks li a.blogger, #unalTop .firstMenu ul.socialLinks li a.blogger:hover, #unalTop .firstMenu ul.socialLinks li a.email, #unalTop .firstMenu ul.socialLinks li a.email:hover {
-  background: no-repeat 0 0 url(../images/icnSocial.png);
+  background: no-repeat 0 0 url(/UN_template/static/images/icnSocial.png);
 }
 #unalTop .firstMenu ul.socialLinks li a.twitter:hover, #unalTop .firstMenu ul.socialLinks li a.facebook, #unalTop .firstMenu ul.socialLinks li a.facebook:hover, #unalTop .firstMenu ul.socialLinks li a.youtube, #unalTop .firstMenu ul.socialLinks li a.youtube:hover, #unalTop .firstMenu ul.socialLinks li a.flickr, #unalTop .firstMenu ul.socialLinks li a.flickr:hover, #unalTop .firstMenu ul.socialLinks li a.rss, #unalTop .firstMenu ul.socialLinks li a.rss:hover, #unalTop .firstMenu ul.socialLinks li a.blogger, #unalTop .firstMenu ul.socialLinks li a.blogger:hover, #unalTop .firstMenu ul.socialLinks li a.email, #unalTop .firstMenu ul.socialLinks li a.email:hover {
   background-position: 0 -21px;
@@ -410,12 +410,12 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
 }
 
 #unalTop .navigation {
-  background: url(../images/navigationBack.png);
+  background: url(/UN_template/static/images/navigationBack.png);
   color: white;
   padding: 0;
 }
 #unalTop .navigation .site-url {
-  background: no-repeat 0 0 url(../images/locDot.png);
+  background: no-repeat 0 0 url(/UN_template/static/images/locDot.png);
   clear: both;
   float: left;
   font-size: 1.72em;
@@ -460,7 +460,8 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   padding: 0;
 }
 #unalTop .navigation .buscador .gsc-control-searchbox-only .gsc-input input {
-  background: none;
+  background: none !important;
+  text-indent: 0 !important;
   color: white;
   display: inline;
   font-size: 1.2em;
@@ -497,7 +498,20 @@ ul.dropdown-menu a:hover, ul.dropdown-menu a:active, ul.dropdown-menu a:focus {
   height: 30px;
   padding: 0;
   width: 30px;
+  margin-left: 0 !important;
 }
+
+#unalTop .navigation .buscador .gsc-search-button button.gsc-search-button-v2 svg {
+    width: 16px !important;
+    height: 16px !important;
+    margin: 7px !important;
+}
+
+table.gsc-completion-container {
+    font-family: 'Ancizar sans' !important;
+    font-weight: normal !important;
+}
+
 #unalTop .navigation .buscador .gsc-search-button input.gsc-search-button {
   border: none;
   -webkit-box-shadow: none;
@@ -924,7 +938,7 @@ body footer .logos {
   position: absolute;
   max-height: 5000px;
   width: 100%;
-  background: url(../images/navigationBack_small.png);
+  background: url(/UN_template/static/images/navigationBack_small.png);
 }
 #unalTop .navigation:last-child {
   padding-bottom: 15px;

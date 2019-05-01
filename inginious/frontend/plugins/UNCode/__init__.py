@@ -12,9 +12,15 @@ _TASK_RESULT_LEGEND_MODAL_HTML_FILE = "task_result_legend_modal.html"
 def init(plugin_manager, course_factory, client, config):
     plugin_manager.add_page(r'/UNCode/static/(.*)', create_static_resource_page(_static_folder_path))
 
-    plugin_manager.add_hook("javascript_header", lambda: "/UNCode/static/js/uncode.js")
-    plugin_manager.add_hook("javascript_header", lambda: "/UNCode/static/js/task_files_upload_multiple.js")
-    plugin_manager.add_hook("css", lambda: "/UNCode/static/css/uncode.css")
+    use_minified = config.get("use_minified", True)
+    if use_minified:
+        plugin_manager.add_hook("javascript_footer", lambda: "/UNCode/static/js/UNCode.min.js")
+        plugin_manager.add_hook("css", lambda: "/UNCode/static/css/UNCode.min.css")
+    else:
+        plugin_manager.add_hook("javascript_footer", lambda: "/UNCode/static/js/uncode.js")
+        plugin_manager.add_hook("javascript_footer", lambda: "/UNCode/static/js/task_files_upload_multiple.js")
+        plugin_manager.add_hook("css", lambda: "/UNCode/static/css/uncode.css")
+
     plugin_manager.add_hook("additional_body_html", lambda: "<p class='hidden' id='default_task_context'>" +
                                                             read_file(_static_folder_path,
                                                                       _CONTEXT_TASK_TEMPLATE_FILE) + "</p>")
