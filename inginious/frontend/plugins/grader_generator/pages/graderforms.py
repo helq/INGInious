@@ -23,7 +23,7 @@ class GraderForm:
     in all the forms (i.e multilang, HDL) """
 
     def __init__(self, task_data, task_fs):
-        self.task_data = dict(task_data)
+        self.task_data = task_data
         self.task_fs = task_fs
     
     def parse(self):
