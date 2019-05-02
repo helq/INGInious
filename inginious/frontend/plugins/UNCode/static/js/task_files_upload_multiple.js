@@ -102,7 +102,7 @@ jQuery(document).ready(function () {
     }
 
     function matchFilesMessage(){
-        let tabFileList = $('#tab_file_list');
+        let tabFileList = $('#edit_file_tabs');
         tabFileList.prepend(`<div class="alert  alert-info">
         <i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>
             <b>
