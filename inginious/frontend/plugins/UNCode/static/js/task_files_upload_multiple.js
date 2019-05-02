@@ -101,9 +101,21 @@ jQuery(document).ready(function () {
         }
     }
 
+    function matchFilesMessage(){
+        let tabFileList = $('#edit_file_tabs');
+        tabFileList.prepend(`<div class="alert  alert-info">
+        <i class="fa fa-info-circle fa-lg" aria-hidden="true"></i>
+            <b>
+            If the files uploaded follow the format 'x.in' and 'x.out', this files will be automatically
+            match on the test cases.
+            </b>
+        </div>`);
+    }
+
     addTaskFilesUploadMultipleButton();
     uploadMultipleFilesOnChange();
     taskFilesUploadMultiple();
     closeModalAction();
+    matchFilesMessage();
 
 });

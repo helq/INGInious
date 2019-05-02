@@ -1,5 +1,7 @@
 let studio_grader_test_case_sequence = 0;
 let grader_test_cases_count = 0;
+let test_cases_input = [];
+let ids_test_cases_input = [];
 
 function studio_add_test_case_from_form()
 {
@@ -39,6 +41,8 @@ function studio_add_test_case(test_case)
 
     studio_grader_test_case_sequence++;
     grader_test_cases_count++;
+    test_cases_input.push(inputFile);
+    ids_test_cases_input.push(test_id)
 
     let first_row = (grader_test_cases_count == 1);
 
@@ -61,6 +65,9 @@ function studio_remove_test_case(id) {
     if(grader_test_cases_count == 0){
       $('#grader_test_cases_header').hide();
     }
+    let ind_of_test_case = ids_test_cases_input.findIndex(el => el === id);
+    test_cases_input.splice(ind_of_test_case, 1);
+    ids_test_cases_input.splice(ind_of_test_case, 1);
 }
 
 function studio_update_grader_problems() {
@@ -153,6 +160,7 @@ function studio_update_grader_files()
 
 function studio_update_container_name()
 {
+  // This function hides the forms which container is not been used
   // Check container (environment) name, and hide all test containers
   let container_name = $("#environment").val();
   let test_containers = $(".grader_form");
@@ -165,5 +173,55 @@ function studio_update_container_name()
   if(container_name === "multiple_languages"){
     try{ $("#multilang_grader_form")[0].style.display = "block"; } catch {};
   }
+}
+
+// Match test cases
+
+function read_files_and_match(){
+  // This function reads all the files on the tab "Task files" and 
+  // matches to test cases
+  $.get('/api/grader_generator/test_file_api', {
+    course_id: courseId,
+    task_id: taskId
+}, function(files) {
+    // Pass the file info to JSON for comparison
+    let json_files = [];
+    for(let ind = 0; ind < files.length; ind++)
+      json_files.push(JSON.stringify(files[ind]));
+    
+    $.each(files, function(index, file) {
+      if (file.is_directory ) {
+        return;
+      }
+      
+      let entry = {};
+      let parts = file.name.split('.');
+      let complete_parts = file.complete_name.split('.')
+      let name_without_extension = parts.splice(0, parts.length - 1).join(".");
+      let complete_name_output = complete_parts.splice(0, complete_parts.length - 1).join(".") + '.out';
+      
+      
+      if(test_cases_input.includes(file.name)){
+        return;
+      }
+      if (parts[parts.length - 1] === 'in'){
+        
+        let file_obj = {
+          "level" : file.level,
+          "is_directory" : false,
+          "name" : name_without_extension + '.out',
+          "complete_name" : complete_name_output
+        }
+        if (json_files.includes(JSON.stringify(file_obj))){
+          entry = {
+            'input_file': file.complete_name,
+            'output_file': file_obj.complete_name
+          }
+          studio_add_test_case(entry);
+        }
+        
+      }
+    });
+}, "json");
 }
 
