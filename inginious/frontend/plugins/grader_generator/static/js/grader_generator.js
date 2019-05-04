@@ -208,9 +208,9 @@ function read_files_and_match(){
         
         let file_obj = {
           "level" : file.level,
-          "is_directory" : false,
-          "name" : name_without_extension + '.out',
-          "complete_name" : complete_name_output
+          "complete_name" : complete_name_output,
+          "name" : name_without_extension + '.out',          
+          "is_directory" : false
         }
         if (json_files.includes(JSON.stringify(file_obj))){
           entry = {
