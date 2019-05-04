@@ -184,10 +184,7 @@ function read_files_and_match(){
     course_id: courseId,
     task_id: taskId
 }, function(files) {
-    // Pass the file info to JSON for comparison
-    let json_files = [];
-    for(let ind = 0; ind < files.length; ind++)
-      json_files.push(JSON.stringify(files[ind]));
+    // Pass the file info to JSON for comparison              
     
     $.each(files, function(index, file) {
       if (file.is_directory ) {
@@ -204,22 +201,24 @@ function read_files_and_match(){
       if(test_cases_input.includes(file.name)){
         return;
       }
-      if (parts[parts.length - 1] === 'in'){
-        
+      
+      if (parts[parts.length - 1] === 'in'){        
         let file_obj = {
           "level" : file.level,
           "complete_name" : complete_name_output,
           "name" : name_without_extension + '.out',          
           "is_directory" : false
         }
-        if (json_files.includes(JSON.stringify(file_obj))){
-          entry = {
-            'input_file': file.complete_name,
-            'output_file': file_obj.complete_name
+        for(ind = 0; ind < files.length; ind++){
+          var el = files[ind];
+          if(el.complete_name === file_obj.complete_name && el.is_directory === file_obj.is_directory){            
+            entry = {
+              'input_file': file.complete_name,
+              'output_file': file_obj.complete_name
+            }
+            studio_add_test_case(entry);
           }
-          studio_add_test_case(entry);
         }
-        
       }
     });
 }, "json");
