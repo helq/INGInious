@@ -6,10 +6,10 @@ class SubmissionsByVerdictApi(AdminApi):
     def get_statistics_by_verdict(self, course):
         course_id = course.get_id()
         statistics_by_verdict = self.database.submissions.aggregate([
-            {"$match": {"courseid": course_id, "custom.summary_result": {"$ne": None}}},
+            {"$match": {"courseid": course_id, "custom.custom_summary_result": {"$ne": None}}},
             {
                 "$group": {
-                    "_id": {"summary_result": "$custom.summary_result",
+                    "_id": {"summary_result": "$custom.custom_summary_result",
                             "task_id": "$taskid"
                            },
                     "count": {"$sum": 1}
@@ -36,7 +36,6 @@ class SubmissionsByVerdictApi(AdminApi):
         statistics_by_verdict = self.get_statistics_by_verdict(course)
         course_tasks = course.get_tasks()
         sorted_tasks = sorted(course_tasks.values(), key=lambda task: task.get_order())
-
         task_id_to_statistics = {}
         for element in statistics_by_verdict:
             task_id = element["task_id"]
