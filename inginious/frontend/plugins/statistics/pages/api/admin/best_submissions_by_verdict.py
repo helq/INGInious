@@ -29,7 +29,7 @@ class BestSubmissionsByVerdictApi(AdminApi):
             },
             {
                 "$group": {
-                    "_id": {"summary_result": "$submission.custom.summary_result",
+                    "_id": {"summary_result": "$submission.custom.custom_summary_result",
                             "taskid": "$taskid"},
                     "count": {"$sum": 1}
                 }
