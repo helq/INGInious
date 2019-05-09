@@ -41,7 +41,7 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
 
     var data_count_obj = {};
 
-    var yLabel = normalized ? "Percentage of tasks" : "Number of tasks";
+    var yLabel = normalized ? "Percentage of submissions" : "Number of submissions";
 
     var tasks_ids = {};
     var tick = 0;
