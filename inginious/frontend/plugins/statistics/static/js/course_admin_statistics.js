@@ -44,10 +44,12 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
     var yLabel = normalized ? "Percentage of submissions" : "Number of submissions";
 
     var tasks_ids = {};
+    var tasks_names = {};
     var tick = 0;
     for(var i = 0; i < data.length; i++){        
         if(data_count_obj[data[i].task_id] == null){
             data_count_obj[data[i].task_id] = 0;
+            tasks_names[tick] = data[i].task_name;
             tasks_ids[data[i].task_id] = tick++;
         }   
         data_count_obj[data[i].task_id] += data[i].count;
@@ -82,7 +84,7 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
         title: 'Tasks',
         tickmode : "array",
         tickvals: Object.values(tasks_ids),
-        ticktext: Object.keys(tasks_ids),
+        ticktext: Object.values(tasks_names),
         titlefont:{
         size: 16,
         color: COLOR_LABEL

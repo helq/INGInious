@@ -82,6 +82,7 @@ class BestSubmissionsByVerdictApi(AdminApi):
             for verdict in verdicts:
                 best_statistics_by_verdict.append({
                     "task_id": _id,
+                    "task_name" : task.get_name(self.user_manager.session_language()),
                     "summary_result": verdict["summary_result"],
                     "count": verdict["count"]
                 })
