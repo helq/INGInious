@@ -109,7 +109,7 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
     container[0].on('plotly_click', function(data){
         var point = data.points[0];
         var pointNumber = point.pointNumber;
-        var taskId = point.data.x[pointNumber];
+        var taskId = Object.keys(tasks_ids)[point.data.x[pointNumber]];
         var summaryResult = point.data.name;
         $.get(api_url, {
             course_id: adminStatistics.courseId,
@@ -225,7 +225,7 @@ var SubmissionsVerdictStatistic = (function() {
 
             plotVerdictStatisticsChart(this.containerId, data,title,
                 this.toggle_normalize_submissions_per_tasks, api_url, function(result){
-                tableGenerator(table_id, result);
+                    tableGenerator(table_id, result);
                 });
 
     };

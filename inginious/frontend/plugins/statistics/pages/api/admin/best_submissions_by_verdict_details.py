@@ -33,7 +33,7 @@ class BestSubmissionsByVerdictStatisticsDetailApi(AdminApi):
             },
             {
                 "$match": {
-                    "submission.custom.summary_result": summary_result
+                    "submission.custom.custom_summary_result": summary_result
                 }
             },
             {

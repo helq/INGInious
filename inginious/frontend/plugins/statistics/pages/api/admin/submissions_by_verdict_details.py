@@ -11,7 +11,7 @@ class SubmissionsByVerdictDetailsApi(AdminApi):
             {"$match":
                 {
                     "courseid": course_id,
-                    "custom.summary_result": summary_result,
+                    "custom.custom_summary_result": summary_result,
                     "taskid" : task_id
                 }
             },
