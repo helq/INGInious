@@ -17,7 +17,7 @@ function getData(data_entry, data_count_obj){
     return data_entry.count;
 }
 
-function createObjectToPlotData(data, data_count_obj, verdict, color_category, get_function) {
+function createObjectToPlotData(data, data_count_obj, tasks_ids, verdict, color_category, get_function) {
 
     var plotData = {
     x: [],
@@ -30,7 +30,7 @@ function createObjectToPlotData(data, data_count_obj, verdict, color_category, g
     for(var i = 0; i < data.length; ++i) {
 
     if(data[i].summary_result === verdict){
-        plotData.x.push(data[i].task_id);
+        plotData.x.push(tasks_ids[data[i].task_id]);
         plotData.y.push(get_function(data[i], data_count_obj));
     }
     }
@@ -41,32 +41,35 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
 
     var data_count_obj = {};
 
-    var yLabel = normalized ? "Percentage of tasks" : "Number of tasks";
+    var yLabel = normalized ? "Percentage of submissions" : "Number of submissions";
 
-    var tasks_ids = [];
-    for(var i = 0; i < data.length; i++){
-    if(data_count_obj[data[i].task_id] == null){
-        data_count_obj[data[i].task_id] = 0;
-        tasks_ids.push(data[i].task_id);
-    }
-    data_count_obj[data[i].task_id] += data[i].count;
+    var tasks_ids = {};
+    var tasks_names = {};
+    var tick = 0;
+    for(var i = 0; i < data.length; i++){        
+        if(data_count_obj[data[i].task_id] == null){
+            data_count_obj[data[i].task_id] = 0;
+            tasks_names[tick] = data[i].task_name;
+            tasks_ids[data[i].task_id] = tick++;
+        }   
+        data_count_obj[data[i].task_id] += data[i].count;
     }
 
     var get_function = normalized ? getDataNormalized : getData;
 
-    var compilation_error_data = createObjectToPlotData(data, data_count_obj,
+    var compilation_error_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "COMPILATION_ERROR", COLOR_COMPILATION_ERROR, get_function);
-    var time_limit_data = createObjectToPlotData(data, data_count_obj,
+    var time_limit_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "TIME_LIMIT_EXCEEDED", COLOR_TIME_LIMIT_EXCEEDED, get_function);
-    var memory_limit_data = createObjectToPlotData(data, data_count_obj,
+    var memory_limit_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "MEMORY_LIMIT_EXCEEDED", COLOR_MEMORY_LIMIT_EXCEEDED, get_function);
-    var runtime_error_data = createObjectToPlotData(data, data_count_obj,
+    var runtime_error_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "RUNTIME_ERROR", COLOR_RUNTIME_ERROR, get_function);
-    var wrong_answer_data = createObjectToPlotData(data, data_count_obj,
+    var wrong_answer_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "WRONG_ANSWER", COLOR_WRONG_ANSWER, get_function);
-    var internal_error_data = createObjectToPlotData(data, data_count_obj,
+    var internal_error_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "INTERNAL_ERROR", COLOR_INTERNAL_ERROR, get_function);
-    var accepted_data = createObjectToPlotData(data, data_count_obj,
+    var accepted_data = createObjectToPlotData(data, data_count_obj, tasks_ids,
     "ACCEPTED", COLOR_ACCEPTED, get_function);
 
     var plotData = [compilation_error_data, time_limit_data, memory_limit_data,
@@ -79,8 +82,9 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
     hovermode: 'closest',
     xaxis: {
         title: 'Tasks',
-        categoryorder : "array",
-        categoryarray : tasks_ids,
+        tickmode : "array",
+        tickvals: Object.values(tasks_ids),
+        ticktext: Object.values(tasks_names),
         titlefont:{
         size: 16,
         color: COLOR_LABEL
@@ -105,7 +109,7 @@ function plotVerdictStatisticsChart(id_div, data, statistic_title, normalized, a
     container[0].on('plotly_click', function(data){
         var point = data.points[0];
         var pointNumber = point.pointNumber;
-        var taskId = point.data.x[pointNumber];
+        var taskId = Object.keys(tasks_ids)[point.data.x[pointNumber]];
         var summaryResult = point.data.name;
         $.get(api_url, {
             course_id: adminStatistics.courseId,
@@ -221,7 +225,7 @@ var SubmissionsVerdictStatistic = (function() {
 
             plotVerdictStatisticsChart(this.containerId, data,title,
                 this.toggle_normalize_submissions_per_tasks, api_url, function(result){
-                tableGenerator(table_id, result);
+                    tableGenerator(table_id, result);
                 });
 
     };

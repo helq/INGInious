@@ -12,7 +12,7 @@ def task_submissions_detail(submissions):
         "id": str(s["_id"]),
         "status": s["status"],
         "submitted_on": str(s["submitted_on"]),
-        "summary_result": s["custom"]["summary_result"]
+        "summary_result": s["custom"]["custom_summary_result"]
 
     } for s in submissions]
 
@@ -27,5 +27,5 @@ def project_submission(submission):
         "status": submission["status"],
         "result": submission["result"],
         "grade": submission["grade"],
-        "summary_result": submission.get("custom", {}).get("summary_result", None)
+        "summary_result": submission.get("custom", {}).get("custom_summary_result", None)
     }
