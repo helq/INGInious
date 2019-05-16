@@ -6,6 +6,7 @@ from inginious.frontend.plugins.utils import create_static_resource_page, get_ma
 from inginious.client.client_sync import ClientSync
 from inginious.frontend.pages.api._api_page import APIAuthenticatedPage
 from inginious.frontend.parsable_text import ParsableText
+from bson.objectid import ObjectId
 
 _static_folder_path = os.path.join(os.path.dirname(__file__), "static")
 
@@ -17,6 +18,28 @@ def customInputManagerWithCurriedClient(client):
         def add_unsaved_job(self, task, inputdata):
             temp_client = ClientSync(self._client)
             return temp_client.new_job(task, inputdata)
+
+        def API_GET(self):
+            request_params = web.input()
+            submission_id = get_mandatory_parameter(request_params, "submission")
+
+            # A mongo request for the submission and his input
+            # How do i do this?
+            things = self.database.submissions.aggregate([
+                {
+                    '$match' : {
+                        "_id" : ObjectId(submission_id)
+                    }
+                },
+                {
+                    "$project" : {
+                        "_id": 0,
+                        "taskid": 1,
+                        "courseid": 1
+                    }
+                }
+            ])
+            return 200, list(things)[0]
 
         def API_POST(self):
             request_params = web.input()
