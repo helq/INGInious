@@ -90,7 +90,7 @@ jQuery(document).ready(function () {
         let tabFileList = $('#tab_file_list');
         let filesAlert = tabFileList.find("div").filter("[role=alert]");
         const message = "<p>There was an error while uploading the files: <strong>" +
-            filesFailedUpload.sort().join(", ") + "</strong>. They may be already uploaded.</p>";
+            filesFailedUpload.sort().join(", ") + "</strong>. Invalid path, Maybe save the task or check that the name is not already in used. </p>";
 
         if (filesAlert.length) {
             filesAlert.text('');
