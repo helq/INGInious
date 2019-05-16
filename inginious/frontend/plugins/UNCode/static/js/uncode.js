@@ -81,9 +81,14 @@ jQuery(document).ready(function () {
         documentationElement.attr("target", "_blank");
     }
 
+    function stopSideBar(){
+        $("#sidebar_affix").css('position', 'static');
+    }
+
     updateTemplate();
     addTaskContextTemplate();
     addTaskContextHelp();
     updateCourseDocumentationLinks();
     addTaskResultLegendButton();
+    stopSideBar();
 });

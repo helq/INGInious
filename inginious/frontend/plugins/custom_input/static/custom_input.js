@@ -8,11 +8,18 @@ function getCourseIdFromUrl() {
     return urlTokens[urlTokens.length - 2];
 }
 
+function getCurrentPageName() {
+    let urlTokens = window.location.pathname.split("/");
+    return urlTokens[1];
+
+}
+
 function displayCustomTestAlertError(content) {
     displayTaskStudentAlertWithProblems(content, "danger");
 }
 
-function runCustomTest (inputId) {
+function apiCustomInputRequest(inputId, taskform){
+    // POST REQUEST for running code with custom input
     let customTestOutputArea = $('#customoutput-'+inputId);
     let placeholderSpan = "<span class='placeholder-text'>Your output goes here</span>";
 
@@ -49,11 +56,6 @@ function runCustomTest (inputId) {
         unblurTaskForm();
     }
 
-    let taskForm = new FormData($('form#task')[0]);
-    taskForm.set("submit_action", "customtest");
-    taskForm.set("courseid", getCourseIdFromUrl());
-    taskForm.set("taskid", getTaskIdFromUrl());
-
     blurTaskForm();
     resetAlerts();
     customTestOutputArea.html("Running...");
@@ -62,7 +64,7 @@ function runCustomTest (inputId) {
             url: '/api/custom_input/',
             method: "POST",
             dataType: 'json',
-            data: taskForm,
+            data: taskform,
             processData: false,
             contentType: false,
             success: runCustomTestCallBack,
@@ -71,4 +73,28 @@ function runCustomTest (inputId) {
                 customTestOutputArea.html(placeholderSpan);
             }
     });
+}
+
+function runCustomTest (inputId) {
+    /**
+     * Identifies current page and search task identifier
+     * and course identifier (GET Request to API) for running
+     * the student code with custom input.
+     */
+    let taskForm = new FormData($('form#task')[0]);
+    taskForm.set("submit_action", "customtest");
+
+    if('course' === getCurrentPageName()){    
+        taskForm.set("courseid", getCourseIdFromUrl());
+        taskForm.set("taskid", getTaskIdFromUrl());
+        apiCustomInputRequest(inputId, taskForm);
+    } else if('submission' === getCurrentPageName()){
+        $.get('/api/custom_input/',{
+            submission: getTaskIdFromUrl()
+        }, (result) => {
+            taskForm.set("courseid", result['courseid']);
+            taskForm.set("taskid", result['taskid']);
+            apiCustomInputRequest(inputId, taskForm);
+        }) 
+    }    
 }
