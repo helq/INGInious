@@ -8,6 +8,9 @@ var PythonTutor = (function () {
 
         if (language == "plain")
             language = getLanguageForProblemId(this.problemId);
+        if (language == 'python')
+            language = getInginiousLanguageForProblemId(this.problemId);
+            
 
         this.language = language;
         this.input = document.getElementById("custominput-" + this.problemId).value;
@@ -87,8 +90,10 @@ var PythonTutor = (function () {
     PythonTutor.prototype.languageURIName = function () {
         if (this.language == "javascript")
             return "js";
-        if (this.language == "python")
+        if (this.language == "python2")
             return "2";
+        if (this.language == 'python3')
+            return "3";
         return this.language;
     };
 
