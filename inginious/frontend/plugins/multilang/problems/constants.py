@@ -1,4 +1,5 @@
 _python_tutor_url = "http://localhost:8003/"
+_python_tutor_url_py2 = "http://localhost:8003/"
 _linter_url = "http://localhost:4567/"
 _show_tools = True
 
@@ -7,6 +8,9 @@ def set_python_tutor_url(new_python_tutor_url):
     global _python_tutor_url
     _python_tutor_url = new_python_tutor_url
 
+def set_python_tutor_url_py2(new_python2_tutor_url):
+    global _python_tutor_url_py2
+    _python_tutor_url_py2 = new_python2_tutor_url
 
 def set_linter_url(new_linter_url):
     global _linter_url
@@ -28,3 +32,6 @@ def get_linter_url():
 
 def get_show_tools():
     return _show_tools
+
+def get_python_tutor_url_py2():
+    return _python_tutor_url_py2
