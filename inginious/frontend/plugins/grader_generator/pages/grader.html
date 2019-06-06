@@ -78,6 +78,18 @@ $#
 
 <hr/>
 <h4 align="center">Test cases</h4>
+<div class="col-4" style="height: 100%;">
+        <div class="btn btn-success" onclick="toggle_selection_tests_cases()">
+            <input id="toggle_select_test_cases" type="checkbox"
+            onchange="toggle_selection_tests_cases()" >
+            All diffs</input>
+        </div>
+        <button type="button" class="btn btn-danger" style=""
+          onclick="remove_all_test_cases()">
+          <i class="fa fa-trash" aria-hidden="true"></i>
+          Remove all tests</button>
+        <br>
+    </div>
 <div class="jumbotron">
     <div class="row" id="grader_test_cases_header" style="display: none;">
         <div class="form-group col-xs-12" style="text-align: center;">

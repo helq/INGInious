@@ -224,3 +224,28 @@ function read_files_and_match(){
 }, "json");
 }
 
+/** Utilities
+ * Toggle selection: selects all in case that some or none test cases are selected
+ * and unselects all in case that all test cases are selected
+ *
+ * Remove all: Removes all the test cases
+ */
+
+function toggle_selection_tests_cases(){
+  var option = $("#toggle_select_test_cases")[0].checked;
+  // Activate in case of button press and not checkbox
+  option = !option;
+  $("#toggle_select_test_cases").prop("checked", option);
+
+  ids_test_cases_input.forEach((item, _) => {
+    $("#grader_test_cases_" + item + "_diff_shown").prop("checked", option);
+  })
+
+}
+
+function remove_all_test_cases(){
+  var to_delete = ids_test_cases_input.slice();
+  to_delete.forEach((item, _) => {
+    studio_remove_test_case(item);
+  });
+}
