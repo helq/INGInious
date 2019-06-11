@@ -79,7 +79,6 @@ class BestSubmissionsByVerdictApi(AdminApi):
 
         for task in sorted_tasks:
             _id = task.get_id()
-            print(os.path.getctime(task.get_fs().prefix + 'task.yaml'))
             verdicts = task_id_to_statistics.get(_id, [])
             for verdict in verdicts:
                 best_statistics_by_verdict.append({
