@@ -29,21 +29,6 @@ $#
     </div>
 </div>
 
-
-
-<div class="form-group">
-    <label for="grader_compute_diffs" class="col-sm-4 control-label">Compute diffs</label>
-
-    <div class="col-sm-8">
-        <div class="checkbox"><label>
-            <input type="checkbox" id="grader_compute_diffs" name="grader_compute_diffs"
-                   $if task_data.get('grader_compute_diffs', True):
-                       checked="checked"
-            />&nbsp;
-        </label></div>
-    </div>
-</div>
-
 <div class="form-group">
     <label for="grader_diff_max_lines" class="col-sm-4 control-label">Maximum diff lines</label>
     <div class="col-sm-8">
