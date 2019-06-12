@@ -40,7 +40,6 @@ class GraderForm:
             raise InvalidGraderError("'Diff context lines' must be an integer")
 
         # Parse checkboxes
-        self.task_data["grader_compute_diffs"] = "grader_compute_diffs" in self.task_data
         self.task_data["treat_non_zero_as_runtime_error"] = "treat_non_zero_as_runtime_error" in self.task_data
 
     def validate(self):
@@ -134,7 +133,6 @@ class MultilangForm(GraderForm):
                     for test_case in self.task_data["grader_test_cases"]]
         weights = [test_case["weight"] for test_case in self.task_data["grader_test_cases"]]
         options = {
-            "compute_diff": self.task_data["grader_compute_diffs"],
             "treat_non_zero_as_runtime_error": self.task_data["treat_non_zero_as_runtime_error"],
             "diff_max_lines": self.task_data["grader_diff_max_lines"],
             "diff_context_lines": self.task_data["grader_diff_context_lines"],
@@ -173,7 +171,6 @@ class HDLForm(GraderForm):
         testbench_file_name = self.task_data["testbench_file_name"]
         hdl_expected_output = self.task_data["hdl_expected_output"]
         options = {
-            "compute_diff": self.task_data["grader_compute_diffs"],
             "treat_non_zero_as_runtime_error": self.task_data["treat_non_zero_as_runtime_error"],
             "diff_max_lines": self.task_data["grader_diff_max_lines"],
             "diff_context_lines": self.task_data["grader_diff_context_lines"],
