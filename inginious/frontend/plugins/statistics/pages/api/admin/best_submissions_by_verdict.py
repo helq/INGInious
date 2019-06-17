@@ -1,4 +1,5 @@
 import web
+import os
 from .admin_api import AdminApi
 
 class BestSubmissionsByVerdictApi(AdminApi):
@@ -60,7 +61,7 @@ class BestSubmissionsByVerdictApi(AdminApi):
 
         best_statistics_by_verdict = self.get_best_statistics_by_verdict(course)
         course_tasks = course.get_tasks()
-        sorted_tasks = sorted(course_tasks.values(), key=lambda task: task.get_order())
+        sorted_tasks = sorted(course_tasks.values(), key=lambda task: os.path.getctime(task.get_fs().prefix + 'task.yaml'))
 
         task_id_to_statistics = {}
         for element in best_statistics_by_verdict:
