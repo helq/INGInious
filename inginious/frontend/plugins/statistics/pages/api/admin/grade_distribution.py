@@ -1,5 +1,6 @@
 import collections
 import web
+import os
 
 from .admin_api import AdminApi
 
@@ -28,5 +29,6 @@ class GradeDistributionApi(AdminApi):
         grade_distribution_statistics = self._compute_grade_distribution_statistics(course_id)
         statistics_by_grade_distribution = self.convert_task_dict_to_sorted_list(course, grade_distribution_statistics,
                                                                                  'grades', include_all_tasks=True)
-
-        return 200, statistics_by_grade_distribution
+        sorted_tasks = sorted(statistics_by_grade_distribution,
+                            key=lambda task_inf: os.path.getctime(course.get_task(task_inf['task_id']).get_fs().prefix + 'task.yaml'))
+        return 200, sorted_tasks
