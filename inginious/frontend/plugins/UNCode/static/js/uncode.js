@@ -85,10 +85,31 @@ jQuery(document).ready(function () {
         $("#sidebar_affix").css('position', 'static');
     }
 
+    function remove_unused_grader_environments(){
+        let to_remove = ['mcq', 'default'];
+        to_remove.forEach((item, _) => {
+            $(`form #environment option[value=${item}]`).each(function() {
+                $(this).remove();
+            });            
+        });  
+    }
+
+    function remove_subproblems_problem_type(){
+        // This removes the options of code, single-line code (think about the others)
+        let to_remove = ['code', 'code_single_line', 'file', 'multiple_choice', 'match'];        
+        to_remove.forEach((item, _) => {
+            $(`form #new_subproblem_type option[value=${'subproblem_'.concat(item)}`).each(function() {
+                $(this).remove();
+            });
+        });        
+    }
+
     updateTemplate();
     addTaskContextTemplate();
     addTaskContextHelp();
     updateCourseDocumentationLinks();
     addTaskResultLegendButton();
     stopSideBar();
+    remove_subproblems_problem_type();
+    remove_unused_grader_environments();
 });
