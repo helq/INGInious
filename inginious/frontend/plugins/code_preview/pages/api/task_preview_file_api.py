@@ -32,8 +32,8 @@ class TaskPreviewFileAPI(APIAuthenticatedPage):
         
         # Asks for file
         try:
-            f = open(os.path.join(task.get_fs().prefix + 'preview'), 'r')
-            return 200, f.read()
+            file_preview = open(os.path.join(task.get_fs().prefix + 'preview'), 'r')
+            return 200, file_preview.read()
         except:
             return 200, "File not found"
         # Returns file text
