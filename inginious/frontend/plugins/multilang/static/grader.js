@@ -4,7 +4,7 @@ function updateDiffBlock(blockId) {
 }
 
 function createDownloadLink(filename, text){
-    var attributes = 'class="btn-link download=' + filename;
+    var attributes = 'class="btn-link" download="' + filename + '"';
     var element = '<a ' + attributes + 'href="data:text/plain;charset=utf-8,' + encodeURIComponent(text) + '">Download</a>';
     // Write our new downloadable link. On div placeholder
     document.getElementById(filename + '_download_link').innerHTML = element + "<br/><br/>";
