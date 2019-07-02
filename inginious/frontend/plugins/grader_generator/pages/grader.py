@@ -1,6 +1,8 @@
 import json
 import os
-from .graderforms import MultilangForm, HDLForm, InvalidGraderError
+from .multilang_form import MultilangForm
+from .hdl_form import HDLForm
+from .grader_form import InvalidGraderError
 
 from .constants import get_use_minified
 
