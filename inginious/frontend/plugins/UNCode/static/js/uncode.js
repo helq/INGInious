@@ -104,6 +104,21 @@ jQuery(document).ready(function () {
         });        
     }
 
+    function rewrite_task_title(){
+        /**
+         * This function writes the name of the task instead of the id
+         * on the 'edit task' section.
+         */
+        let title = $('#main_container #content h2')[0].innerHTML
+        let firstletter = title.search("\"") + 1;
+        let lastletter = title.substring(firstletter).search("\"");
+        
+        let new_title = $("#edit_task_tabs_content #name").val();
+        if (new_title !== ""){
+            $('#main_container #content h2')[0].innerHTML = title.substring(0, firstletter) + new_title + title.substring(firstletter + lastletter);
+        }
+    }
+
     updateTemplate();
     addTaskContextTemplate();
     addTaskContextHelp();
@@ -112,4 +127,5 @@ jQuery(document).ready(function () {
     stopSideBar();
     remove_subproblems_problem_type();
     remove_unused_grader_environments();
+    rewrite_task_title();
 });
