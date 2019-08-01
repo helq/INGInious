@@ -53,8 +53,9 @@ def customInputManagerWithCurriedClient(client):
                     problem.get_id(): problem.input_type()()
                     for problem in task.get_problems() if problem.input_type() in [dict, list]
                 }
-                
                 userinput = task.adapt_input_for_backend(web.input(**init_var))
+                for k in userinput:
+                    userinput[k] = userinput[k].replace("\r", "")
                 result, grade, problems, tests, custom, archive, stdout, stderr = self.add_unsaved_job(task, userinput)
 
                 data = {
@@ -64,7 +65,6 @@ def customInputManagerWithCurriedClient(client):
                     "stdout": custom.get("custom_stdout", ""),
                     "stderr": custom.get("custom_stderr", "")
                 }
-
                 web.header('Content-Type', 'application/json')
                 return 200, json.dumps(data)
 
